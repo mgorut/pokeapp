@@ -1,5 +1,3 @@
-## 📄 File 4: `04-FRONTEND-REQUIREMENTS.md`
-
 # 🎨 Frontend Requirements - React + TypeScript
 
 ## Context
