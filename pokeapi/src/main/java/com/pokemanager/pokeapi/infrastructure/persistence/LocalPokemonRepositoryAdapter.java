@@ -84,7 +84,17 @@ public class LocalPokemonRepositoryAdapter implements LocalPokemonRepository {
             return List.of();
         }
         try {
-            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+            // Defensive normalization: some drivers/Hibernate type mappings can
+            // hand back the jsonb payload as a *quoted JSON string* containing
+            // the array literal (double-encoded). Unwrap one level if so.
+            var node = objectMapper.readTree(json);
+            if (node.isTextual()) {
+                node = objectMapper.readTree(node.asText());
+            }
+            if (node.isArray()) {
+                return objectMapper.convertValue(node, new TypeReference<List<String>>() {});
+            }
+            return List.of();
         } catch (Exception ex) {
             // Corrupt tag payload should never 500 a listing; degrade to empty list.
             return List.of();
