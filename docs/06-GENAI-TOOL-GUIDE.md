@@ -1,5 +1,3 @@
-## 📄 File 6: `06-GENAI-TOOL-GUIDE.md`
-
 # 🤖 Generative AI Tools - Documentation Guide
 
 ## Context
