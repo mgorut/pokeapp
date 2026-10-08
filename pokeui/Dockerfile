@@ -5,6 +5,9 @@
 # so the browser only ever talks to one origin (no CORS in prod).
 # ------------------------------------------------------------------
 
+# Build arg for Vite env vars (VITE_TOKEN_KEY from root .env)
+ARG VITE_TOKEN_KEY
+
 # ---------- Stage 1: build ----------
 FROM node:20-alpine AS build
 WORKDIR /app
@@ -16,6 +19,8 @@ RUN npm install --no-audit --no-fund
 # Build the production bundle (tsc -b runs as part of `npm run build`,
 # so a type error fails the image build — intentional quality gate).
 COPY . .
+# Write .env for Vite build with VITE_TOKEN_KEY
+RUN echo "VITE_TOKEN_KEY=${VITE_TOKEN_KEY}" > .env
 RUN npm run build
 
 # ---------- Stage 2: runtime ----------

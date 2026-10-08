@@ -9,6 +9,7 @@ import { defineConfig as defineVitestConfig } from 'vitest/config';
 // deals with CORS during local development. Vitest block powers component tests.
 const viteConfig = defineConfig({
   plugins: [react(), tailwindcss() as PluginOption],
+  envPrefix: ['VITE_'],
   server: {
     port: 5173,
     proxy: {

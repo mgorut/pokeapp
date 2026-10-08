@@ -11,16 +11,16 @@ services:
     image: postgres:15-alpine
     container_name: pokemanager-db
     environment:
-      POSTGRES_DB: ${DB_NAME:-pokemanager}
-      POSTGRES_USER: ${DB_USER:-pokemanager}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-pokemanager}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"   # exposed for local psql debugging; remove in prod
+      - "5432:5432" # exposed for local psql debugging; remove in prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       # pg_isready must report accepting connections for the specific user/db.
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-pokemanager} -d ${DB_NAME:-pokemanager}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,12 +35,12 @@ services:
     container_name: pokemanager-api
     environment:
       # Spring relaxed binding: SPRING_DATASOURCE_* overrides application.properties defaults.
-      SPRING_DATASOURCE_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/pokemanager}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER:-pokemanager}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-pokemanager}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       # ALWAYS override this secret in real deployments (>=32 chars enforced by app).
-      JWT_SECRET: ${JWT_SECRET:-change-me-pokemanager-dev-secret-please-override}
-      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL:-https://pokeapi.co/api/v2}
+      JWT_SECRET: ${JWT_SECRET}
+      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL}
     ports:
       - "8080:8080"
     depends_on:
@@ -55,9 +55,11 @@ services:
     build:
       context: ./pokeui
       dockerfile: Dockerfile
+      args:
+        VITE_TOKEN_KEY: ${VITE_TOKEN_KEY}
     container_name: pokemanager-ui
     ports:
-      - "3000:80"     # spec requirement: UI on http://localhost:3000
+      - "3000:80" # spec requirement: UI on http://localhost:3000
     depends_on:
       backend:
         condition: service_healthy

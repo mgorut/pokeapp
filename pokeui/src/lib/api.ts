@@ -15,7 +15,7 @@ import type {
  * - Response interceptor normalises backend errors into ApiError and clears
  *   the token on 401 so the UI can bounce the user to /login.
  */
-export const TOKEN_KEY = 'pokemanager.jwt';
+export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 
 export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
