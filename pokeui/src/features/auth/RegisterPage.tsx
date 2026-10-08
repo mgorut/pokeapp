@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { useAuth } from 'X;
+import { useAuth } from '../../context/useAuth';
 import { toApiError } from '../../lib/api';
 import { credentialsSchema, type Credentials } from './authSchema';
 

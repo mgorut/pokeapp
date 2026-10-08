@@ -11,6 +11,9 @@ VALUES ('00000000-0000-0000-0000-000000000001',
         TIMESTAMP '2024-01-01 00:00:00');
 
 -- Bulbasaur (#1), Charmander (#4), Squirtle (#9).
+-- Spec requires each pre-synced Pokemon to have its proprietary fields FILLED
+-- (localizedName / geographicMetadata / internalClassificationTags), so the
+-- edit flow (US04) has meaningful data out of the box.
 -- internal_classification_tags is jsonb; we cast a JSON array literal explicitly
 -- so the migration stays readable and reviewable.
 INSERT INTO pokemon_local
@@ -18,11 +21,14 @@ INSERT INTO pokemon_local
      internal_classification_tags, synced_at, version)
 VALUES
     ('00000000-0000-0000-0000-000000000001', 1, 'bulbasaur',
-     NULL, 'No recorded sightings yet', CAST('["synced"]' AS JSONB),
+     'Bulbasaurio', 'Kanto region - Viridian Forest, temperate forests up to 1400m',
+     CAST('["starter", "seed", "kanto", "gen-1"]' AS JSONB),
      TIMESTAMP '2024-01-01 00:00:00', 0),
     ('00000000-0000-0000-0000-000000000002', 4, 'charmander',
-     NULL, 'No recorded sightings yet', CAST('["synced"]' AS JSONB),
+     'Charmandino', 'Kanto region - Mt. Ember slopes, dry warm caves',
+     CAST('["starter", "lizard", "kanto", "gen-1"]' AS JSONB),
      TIMESTAMP '2024-01-01 00:00:00', 0),
     ('00000000-0000-0000-0000-000000000003', 9, 'squirtle',
-     NULL, 'No recorded sightings yet', CAST('["synced"]' AS JSONB),
+     'Squirtleto', 'Kanto region - Cerulean Cove, coastal rocks and river deltas',
+     CAST('["starter", "turtle", "kanto", "gen-1"]' AS JSONB),
      TIMESTAMP '2024-01-01 00:00:00', 0);

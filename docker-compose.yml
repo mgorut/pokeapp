@@ -1,0 +1,74 @@
+# ------------------------------------------------------------------
+# PokéManager - full-stack orchestration
+# Services: postgres (state) -> backend (Spring Boot API) -> frontend (Nginx SPA)
+# Startup order is enforced with healthcheck conditions so the backend
+# only starts once Postgres accepts connections, and Nginx only once the
+# API answers /actuator/health with UP.
+# ------------------------------------------------------------------
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pokemanager-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-pokemanager}
+      POSTGRES_USER: ${DB_USER:-pokemanager}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pokemanager}
+    ports:
+      - "5432:5432"   # exposed for local psql debugging; remove in prod
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # pg_isready must report accepting connections for the specific user/db.
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-pokemanager} -d ${DB_NAME:-pokemanager}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - pokemanager-net
+
+  backend:
+    build:
+      context: ./pokeapi
+      dockerfile: Dockerfile
+    container_name: pokemanager-api
+    environment:
+      # Spring relaxed binding: SPRING_DATASOURCE_* overrides application.properties defaults.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-pokemanager}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-pokemanager}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-pokemanager}
+      # ALWAYS override this secret in real deployments (>=32 chars enforced by app).
+      JWT_SECRET: ${JWT_SECRET:-change-me-pokemanager-dev-secret-please-override}
+      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL:-https://pokeapi.co/api/v2}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Healthcheck defined in pokeapi/Dockerfile (actuator probe); compose honors it.
+    networks:
+      - pokemanager-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./pokeui
+      dockerfile: Dockerfile
+    container_name: pokemanager-ui
+    ports:
+      - "3000:80"     # spec requirement: UI on http://localhost:3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - pokemanager-net
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  pokemanager-net:
+    driver: bridge

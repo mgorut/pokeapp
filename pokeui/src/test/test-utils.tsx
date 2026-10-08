@@ -2,7 +2,7 @@ import { render, type RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import type { ReactElement, ReactNode } from 'react';
-import { AuthProvider } from 'X;
+import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../components/ui/Toast';
 
 /**

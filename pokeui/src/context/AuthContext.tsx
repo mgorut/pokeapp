@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { apiLogin, apiRegister, getStoredToken, storeToken } from '../lib/api';
 import { AuthContext, type AuthState } from './authContextCore';
 
