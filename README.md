@@ -26,37 +26,113 @@ PokéManager implements four user stories:
 ### Clean Architecture (backend)
 
 ```
-            ┌───────────────────────────────────────────────────────────┐
-            │                     pokeapi/ (Spring Boot)                │
-            │                                                           │
- Browser ──▶│  presentation/   Controllers · DTOs · GlobalExceptionHandler│
-            │        │  (HTTP in/out only)                              │
-            │        ▼                                                  │
-            │  application/    PokemonEnumerationService (US01)          │
-            │                  PokemonDetailService      (US02)          │
-            │                  PokemonSyncService        (US03)          │
-            │                  PokemonUpdateService      (US04)          │
-            │                  AuthService                               │
-            │        │  orchestrates use cases, owns transactions         │
-            │        ▼                                                  │
-            │  domain/         LocalPokemon · User · PokemonDetail ·     │
-            │                  EvolutionStage · PageResult ·             │
-            │                  ports (PokeApiClient, repositories) ·     │
-            │                  domain exceptions                         │
-            │        ▲        ⛔ ZERO Spring / JPA imports here          │
-            │        │  implements domain ports                          │
-            │  infrastructure/  JPA entities & adapters · Flyway ·       │
-            │                  PokeApiHttpGateway (RestClient) ·         │
-            │                  Caffeine CacheConfig · JWT security       │
-            └───────────────────────────┬───────────────────────────────┘
-                                        │ HTTPS
-                                        ▼
-                              PokeAPI (pokeapi.co/api/v2)
-                                        │
-                          PostgreSQL 15 (schema + seed via Flyway)
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                           POKEAPI BACKEND (Spring Boot 3)                     │
+│                                                                               │
+│  ┌───────────────────────────────────────────────────────────────────────┐    │
+│  │  presentation/                                                        │    │
+│  │  ┌───────────────────────────────────────────────────────────────┐    │    │
+│  │  │ Controllers:                                                  │    │    │
+│  │  │   • PublicPokemonController    – GET /api/public/pokemon*     │    │    │
+│  │  │   • ProtectedPokemonController – POST/PUT /api/protected/*    │    │    │
+│  │  │   • AuthController             – POST /api/auth/*             │    │    │
+│  │  │  DTOs: RequestDtos, ResponseDtos, ErrorDto                    │    │    │
+│  │  │  GlobalExceptionHandler        – unified error envelope       │    │    │
+│  │  │  ▼  (HTTP layer only, no business logic)                      │    │    │
+│  │  └───────────────────────────────────────────────────────────────┘    │    │
+│  └────────────────────────────┬──────────────────────────────────────────┘    │
+│                               │ calls use cases                               │
+│                               ▼                                               │
+│  ┌───────────────────────────────────────────────────────────────────────┐    │
+│  │  application/   (Use Cases / Services)                                │    │
+│  │  ┌───────────────────────────────────────────────────────────────┐    │    │
+│  │  │ PokemonEnumerationService   – US01: paginated catalog         │    │    │
+│  │  │ PokemonDetailService        – US02: detail + evolution        │    │    │
+│  │  │ PokemonSyncService          – US03: sync from PokeAPI         │    │    │
+│  │  │ PokemonUpdateService        – US04: edit local data           │    │    │
+│  │  │ AuthService                 – register/login/refresh/me       │    │    │
+│  │  │  ▼  Orchestrates domain, owns @Transactional                  │    │    │
+│  │  └───────────────────────────────────────────────────────────────┘    │    │
+│  └────────────────────────────┬──────────────────────────────────────────┘    │
+│                               │ uses domain models & ports                    │
+│                               ▼                                               │
+│  ┌───────────────────────────────────────────────────────────────────────┐    │
+│  │  domain/   (Pure Java – ZERO Spring/JPA imports)   CORE               │    │
+│  │  ┌───────────────────────────────────────────────────────────────┐    │    │
+│  │  │ Entities / Models:                                            │    │    │
+│  │  │   • LocalPokemon    – aggregate root (UUID, version, tags)    │    │    │
+│  │  │   • User            – auth domain model                       │    │    │
+│  │  │   • PokemonDetail   – read-only detail + evolution            │    │    │
+│  │  │   • EvolutionStage  – one node in lineage (stage, id, sprite) │    │    │
+│  │  │   • PageResult<T>   – generic pagination envelope             │    │    │
+│  │  │                                                               │    │    │
+│  │  │ Ports (Interfaces – implemented by infrastructure):           │    │    │
+│  │  │   • PokeApiClient          – fetch from PokeAPI               │    │    │
+│  │  │   • LocalPokemonRepository – CRUD + findByPokeApiId           │    │    │
+│  │  │   • UserRepository         – findByEmail, save                │    │    │
+│  │  │   • PasswordEncoderPort    – encode/verify (BCrypt)           │    │    │
+│  │  │   • JwtTokenProviderPort   – create/parse JWT                 │    │    │
+│  │  │                                                               │    │    │
+│  │  │ Domain Exceptions:                                            │    │    │
+│  │  │   • PokemonNotFoundException, ConcurrentModificationException │    │    │
+│  │  │   • PokeApiUnavailableException, InvalidPayloadException      │    │    │
+│  │  │  ▼  Business rules, no framework coupling                     │    │    │
+│  │  └───────────────────────────────────────────────────────────────┘    │    │
+│  └────────────────────────────┬──────────────────────────────────────────┘    │
+│                               │ implements ports                              │
+│                               ▼                                               │
+│  ┌───────────────────────────────────────────────────────────────────────┐    │
+│  │  infrastructure/   (Framework adapters)                               │    │
+│  │  ┌───────────────────────────────────────────────────────────────┐    │    │
+│  │  │ JPA Entities & Repositories:                                  │    │    │
+│  │  │   • LocalPokemonEntity, UserEntity + Spring Data JPA          │    │    │
+│  │  │   • LocalPokemonRepositoryAdapter (implements port)           │    │    │
+│  │  │                                                               │    │    │
+│  │  │ External API Gateway:                                         │    │    │
+│  │  │   • PokeApiHttpGateway (Spring RestClient)                    │    │    │
+│  │  │   • PokeApiClientAdapter  (implements PokeApiClient)          │    │    │
+│  │  │   • DTOs: PokeApiDto.* (Jackson-mapped PokeAPI shapes)        │    │    │
+│  │  │                                                               │    │    │
+│  │  │ Cache & Config:                                               │    │    │
+│  │  │   • Caffeine CacheConfig (24h TTL) for US01                   │    │    │
+│  │  │   • Flyway migrations (V1 schema, V2 seed, V3 PG index)       │    │    │
+│  │  │                                                               │    │    │
+│  │  │ Security:                                                     │    │    │
+│  │  │   • JwtTokenProvider (jjwt), BCryptPasswordEncoder            │    │    │
+│  │  │   • SecurityConfig (filter chain, JWT filter, endpoints)      │    │    │
+│  │  │  ▼  All Spring/JPA/JWT details contained here                 │    │    │
+│  │  └───────────────────────────────────────────────────────────────┘    │    │
+│  └────────────────────────────┬──────────────────────────────────────────┘    │
+└───────────────────────────────┼───────────────────────────────────────────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    ▼                       ▼
+           ┌─────────────────┐      ┌─────────────────┐
+           │  POKEAPI.CO     │      │  POSTGRESQL 15  │
+           │  /api/v2        │      │  (Flyway owned) │
+           │  (REST/HTTPS)   │      │  H2 in tests    │
+           └─────────────────┘      └─────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DEPENDENCY RULE (points inward):                                           │
+│  presentation → application → domain ← infrastructure                       │
+│                                                                             │
+│  • Domain has ZERO Spring/JPA imports (enforced by ArchUnit test)           │
+│  • All business logic in domain/application – testable without Spring       │
+│  • Infrastructure swaps (DB, cache, auth) don't touch domain                │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-The dependency rule points inward: `presentation → application → domain ← infrastructure`. The domain layer is framework-free (grep-verified), which makes business logic unit-testable with plain JUnit/Mockito — no Spring context required.
+### Layer Responsibilities
+
+| Layer | Package | Responsibility | Tests |
+|-------|---------|----------------|-------|
+| **presentation** | `com.pokemanager.pokeapi.presentation` | HTTP in/out, serialization, exception mapping | Integration tests (`@SpringBootTest`) |
+| **application** | `com.pokemanager.pokeapi.application.service` | Use cases, transactions, orchestration | Unit tests (mock ports) + Integration |
+| **domain** | `com.pokemanager.pokeapi.domain` | **Pure business logic**, entities, ports, exceptions | Fast unit tests (no Spring context) |
+| **infrastructure** | `com.pokemanager.pokeapi.infrastructure` | JPA, PokeAPI HTTP, Caffeine, JWT, Flyway | Integration tests |
+
+The domain layer is framework-free (ArchUnit-verified), making business logic unit-testable with plain JUnit/Mockito — no Spring context startup needed.
 
 ### Frontend structure
 
