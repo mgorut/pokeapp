@@ -57,8 +57,8 @@ export function PokemonListPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {data.items.map((p) => (
-          <Link key={`${p.id}-${p.uuid ?? 'remote'}`} to={`/pokemon/${p.id}`} className="focus:outline-none">
+        {data.content.map((p) => (
+          <Link key={p.id} to={`/pokemon/${p.id}`} className="focus:outline-none">
             <PokemonCard pokemon={p} />
           </Link>
         ))}

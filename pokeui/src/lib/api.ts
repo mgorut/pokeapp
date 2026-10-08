@@ -57,8 +57,8 @@ export function toApiError(err: unknown): ApiError {
 }
 
 // ---- Auth endpoints -------------------------------------------------------
-export async function apiRegister(email: string, password: string): Promise<AuthResponse> {
-  const { data } = await http.post<AuthResponse>('/auth/register', { email, password });
+export async function apiRegister(username: string, email: string, password: string): Promise<AuthResponse> {
+  const { data } = await http.post<AuthResponse>('/auth/register', { username, email, password });
   return data;
 }
 

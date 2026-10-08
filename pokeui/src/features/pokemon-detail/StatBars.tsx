@@ -1,16 +1,13 @@
-import type { Statistic } from '../../lib/types';
-
-const STAT_LABELS: Record<string, string> = {
-  hp: 'HP', attack: 'Attack', defense: 'Defense',
-  'special-attack': 'Sp. Atk', 'special-defense': 'Sp. Def', speed: 'Speed',
-};
+import type { Statistics } from '../../lib/types';
 
 /** Horizontal bars for base stats; values are normalised against a sane max of 255. */
-export function StatBars({ statistics }: { statistics: Statistic[] }) {
-  if (!statistics.length) return <p className="text-sm text-slate-500">No statistics available.</p>;
+export function StatBars({ statistics }: { statistics: Statistics }) {
+  // Convert the statistics object into an array of name/value pairs for rendering.
+  const statsArray = Object.entries(statistics).map(([key, value]) => ({ name: key, value: value as number }));
+  if (!statsArray.length) return <p className="text-sm text-slate-500">No statistics available.</p>;
   return (
     <ul className="space-y-3">
-      {statistics.map((s) => (
+      {statsArray.map((s) => (
         <li key={s.name}>
           <div className="mb-1 flex justify-between text-xs font-medium text-slate-600">
             <span>{STAT_LABELS[s.name] ?? s.name}</span>
@@ -27,3 +24,8 @@ export function StatBars({ statistics }: { statistics: Statistic[] }) {
     </ul>
   );
 }
+
+const STAT_LABELS: Record<string, string> = {
+  hp: 'HP', attack: 'Attack', defense: 'Defense',
+  specialAttack: 'Sp. Atk', specialDefense: 'Sp. Def', speed: 'Speed',
+};

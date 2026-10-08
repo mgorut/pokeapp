@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -31,6 +31,7 @@ export function PokemonEditPage() {
   const queryClient = useQueryClient();
 
   const justSynced = Boolean((location.state as { justSynced?: boolean } | null)?.justSynced);
+  const justSyncedShownRef = useRef(false);
 
   const { data: local, isPending, error } = useQuery({
     queryKey: queryKeys.localPokemon(uuid),
@@ -55,7 +56,10 @@ export function PokemonEditPage() {
         internalClassificationTags: local.internalClassificationTags ?? [],
         version: local.version,
       });
-      if (justSynced) toast.push('success', `${local.name} added to your local Pokédex – customise it below.`);
+      if (justSynced && !justSyncedShownRef.current) {
+        toast.push('success', `${local.name} added to your local Pokédex – customise it below.`);
+        justSyncedShownRef.current = true;
+      }
     }
   }, [local, reset, justSynced, toast]);
 

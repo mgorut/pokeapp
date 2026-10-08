@@ -11,7 +11,7 @@ WORKDIR /app
 
 # Cache npm deps first: copy manifests before sources.
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+RUN npm install --no-audit --no-fund
 
 # Build the production bundle (tsc -b runs as part of `npm run build`,
 # so a type error fails the image build — intentional quality gate).
@@ -30,6 +30,6 @@ EXPOSE 80
 
 # Nginx returns 200 for index.html if the SPA is served correctly.
 HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
-    CMD wget -qO- http://localhost/ >/dev/null 2>&1 || exit 1
+    CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

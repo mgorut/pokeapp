@@ -71,20 +71,16 @@ export function PokemonDetailPage() {
     );
   }
 
+
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-600 to-rose-800 p-6 text-white shadow-lg">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-end">
-          <img src={data.spriteUrl} alt={data.name} width={160} height={160} className="h-40 w-40 [image-rendering:pixelated] drop-shadow" />
+          <img src={data.image} alt={data.name} width={160} height={160} className="h-40 w-40 [image-rendering:pixelated] drop-shadow" />
           <div className="text-center sm:text-left">
-            <p className="text-xs font-semibold uppercase tracking-widest text-red-200">#{String(data.id).padStart(4, '0')} · {data.category ?? 'Unknown classification'}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-red-200">#{String(data.id).padStart(4, '0')}</p>
             <h1 className="text-3xl font-extrabold capitalize">{data.name}</h1>
-            <p className="mt-1 text-sm text-red-100">
-              {data.massKg != null && <span>{data.massKg.toFixed(1)} kg</span>}
-              {data.massKg != null && data.heightM != null && <span> · </span>}
-              {data.heightM != null && <span>{data.heightM.toFixed(1)} m</span>}
-            </p>
           </div>
           <div className="sm:ml-auto">
             {data.syncedLocally ? (
@@ -107,15 +103,8 @@ export function PokemonDetailPage() {
       {/* Narrative */}
       <Card className="mt-6">
         <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-slate-500">Field notes</h2>
-        <p className="leading-relaxed text-slate-700">{data.description ?? 'No narrative available for this species yet.'}</p>
-        {data.skills.length > 0 && (
-          <ul className="mt-4 flex flex-wrap gap-2" aria-label="Skills">
-            {data.skills.map((s) => (
-              <li key={s} className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold capitalize text-red-700">{s}</li>
-            ))}
-          </ul>
-        )}
-      </Card>
+        <p className="leading-relaxed text-slate-700">{data.narrativeDescription ?? 'No narrative available for this species yet.'}</p>
+              </Card>
 
       {/* Stats + Evolution */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -125,7 +114,7 @@ export function PokemonDetailPage() {
         </Card>
         <Card>
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-500">Evolutionary lineage</h2>
-          <EvolutionTimeline stages={data.evolutionLine} currentId={data.id} />
+          <EvolutionTimeline stages={data.evolutionaryLineage} currentId={data.id} />
         </Card>
       </div>
 

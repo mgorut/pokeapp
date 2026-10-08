@@ -11,11 +11,11 @@ vi.mock('../../lib/api', async (importOriginal) => {
 });
 
 const summary: PokemonSummary = {
-  id: 1, uuid: 'abc-uuid', name: 'bulbasaur', spriteUrl: 'https://x/b.png',
-  category: 'seed', massKg: 6.9, skills: ['overgrow'],
+  id: 1, name: 'bulbasaur', sprite: 'https://x/b.png',
+  category: 'seed', mass: 6.9, skills: ['overgrow'],
 };
 const page: PageResult<PokemonSummary> = {
-  page: 0, size: 12, totalElements: 1, totalPages: 1, items: [summary],
+  page: 0, size: 12, totalElements: 1, totalPages: 1, content: [summary],
 };
 
 describe('PokemonListPage', () => {
@@ -32,7 +32,6 @@ describe('PokemonListPage', () => {
     await waitFor(() => expect(screen.getByText('bulbasaur')).toBeInTheDocument());
     expect(screen.getByText('6.9 kg')).toBeInTheDocument();
     expect(screen.getByText('overgrow')).toBeInTheDocument();
-    expect(screen.getByText('Synced locally')).toBeInTheDocument();
     expect(screen.getByText(/1 Pokémon/)).toBeInTheDocument();
   });
 

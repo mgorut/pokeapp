@@ -45,9 +45,10 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Create a new user account")
-    public ResponseEntity<UserInfoDto> register(@Valid @RequestBody RegisterRequest request) {
+    public AuthResponseDto register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request.username(), request.email(), request.password());
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserInfoDto.from(user));
+        String token = tokenService.generateToken(user.getUsername(), user.getEmail(), user.getRole());
+        return AuthResponseDto.of(token, tokenService.expiresInSeconds(), user);
     }
 
     @PostMapping("/login")

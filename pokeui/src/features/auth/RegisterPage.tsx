@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -6,7 +6,22 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../context/useAuth';
 import { toApiError } from '../../lib/api';
-import { credentialsSchema, type Credentials } from './authSchema';
+import { useForm } from 'react-hook-form';
+
+// Extend schema to include username validation (3-50 chars, non‑blank)
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+  .regex(/\d/, 'Password must contain a digit');
+
+const registerSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username too long'),
+  email: z.string().email('Enter a valid email address'),
+  password: passwordSchema,
+});
+
+type RegisterValues = z.infer<typeof registerSchema>;
 
 /** Registration – on success the JWT is stored immediately and we land on the Pokédex. */
 export function RegisterPage() {
@@ -18,16 +33,16 @@ export function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<Credentials>({ resolver: zodResolver(credentialsSchema) });
+  } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = async (values: Credentials) => {
+  const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
     try {
-      await signUp(values.email, values.password);
+      await signUp(values.username, values.email, values.password);
       navigate('/');
     } catch (err) {
       const apiErr = toApiError(err);
-      // Surface field-level errors from GlobalExceptionHandler when present
+      // Surface field‑level errors from GlobalExceptionHandler when present
       setServerError(apiErr.fieldErrors?.email ?? apiErr.message);
     }
   };
@@ -41,6 +56,7 @@ export function RegisterPage() {
             {serverError}
           </p>
         )}
+        <Input label="Username" error={errors.username?.message} {...register('username')} />
         <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
         <Input
           label="Password"

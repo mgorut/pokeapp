@@ -4,13 +4,13 @@
  */
 
 // US01 – list item returned by GET /api/public/pokemon
+// Matches the backend PokemonSummaryDto field names
 export interface PokemonSummary {
   id: number;            // PokeAPI numeric id
-  uuid: string | null;   // local uuid when already synced, null otherwise
   name: string;
-  spriteUrl: string;
+  sprite: string;
   category: string | null;
-  massKg: number | null;
+  mass: number | null;
   skills: string[];
 }
 
@@ -19,33 +19,33 @@ export interface PageResult<T> {
   size: number;
   totalElements: number;
   totalPages: number;
-  items: T[];
+  content: T[];  // Backend uses "content" not "items"
 }
 
 // US02 – detail returned by GET /api/public/pokemon/{idOrName}
-export interface Statistic {
-  name: string;
-  value: number;
+// Matches backend PokemonDetailDto field names
+export interface Statistics {
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
 }
 
 export interface EvolutionStage {
-  id: number;
+  stage: number;
   name: string;
-  spriteUrl: string;
-  minLevel: number | null;
+  sprite: string;
 }
 
 export interface PokemonDetail {
   id: number;
   name: string;
-  spriteUrl: string;
-  category: string | null;
-  massKg: number | null;
-  heightM: number | null;
-  description: string | null;
-  skills: string[];
-  statistics: Statistic[];
-  evolutionLine: EvolutionStage[];
+  image: string;
+  statistics: Statistics;
+  narrativeDescription: string | null;
+  evolutionaryLineage: EvolutionStage[];
   syncedLocally: boolean;
   localUuid: string | null;
 }
