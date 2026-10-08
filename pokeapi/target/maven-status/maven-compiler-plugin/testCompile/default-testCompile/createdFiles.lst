@@ -1,8 +1,0 @@
-com/pokemanager/pokeapi/application/service/PokemonUpdateServiceTest.class
-com/pokemanager/pokeapi/presentation/AuthAndSecurityIntegrationTest.class
-com/pokemanager/pokeapi/application/service/AuthServiceTest.class
-com/pokemanager/pokeapi/application/service/PokemonDetailServiceTest.class
-com/pokemanager/pokeapi/presentation/PokemonApiIntegrationTest.class
-com/pokemanager/pokeapi/application/service/PokemonEnumerationServiceTest$TestCacheConfig.class
-com/pokemanager/pokeapi/application/service/PokemonEnumerationServiceTest.class
-com/pokemanager/pokeapi/application/service/PokemonSyncServiceTest.class
