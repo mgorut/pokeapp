@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchPokemonDetail, syncPokemon, toApiError } from '../../lib/api';
 import { queryKeys } from '../../lib/queryKeys';
 import type { PokemonDetail } from '../../lib/types';
-import { useAuth } from 'X;
+import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../components/ui/useToast';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';

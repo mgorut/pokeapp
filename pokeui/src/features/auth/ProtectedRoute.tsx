@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { useAuth } from 'X;
+import { useAuth } from '../../context/useAuth';
 
 /**
  * Route guard: unauthenticated users are redirected to /login and sent back
