@@ -1,3 +1,5 @@
+## 📄 File 5: `05-DELIVERY-AND-DEVOPS.md`
+
 # 🚀 Delivery & DevOps Requirements
 
 ## Context
@@ -47,6 +49,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ```yaml
 # Example structure
+version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
@@ -127,9 +130,9 @@ Brief description of the project and its purpose.
 - Node 18+ (for frontend local development)
 
 ### Running with Docker (Recommended)
-```bash
+\`\`\`bash
 docker-compose up --build
-```
+\`\`\`
 Access:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080
@@ -137,17 +140,17 @@ Access:
 
 ### Local Development
 #### Backend
-```bash
+\`\`\`bash
 cd backend
 ./mvnw spring-boot:run
-```
+\`\`\`
 
 #### Frontend
-```bash
+\`\`\`bash
 cd frontend
 npm install
 npm run dev
-```
+\`\`\`
 
 ## 🔐 Demo Credentials
 - Email: `demo@bla.com`
@@ -168,13 +171,13 @@ npm run dev
 - `POST /api/auth/login`
 
 ## 🧪 Testing
-```bash
+\`\`\`bash
 # Backend
 ./mvnw test
 
 # Frontend
 npm test
-```
+\`\`\`
 
 ## 🏛️ Design Decisions
 Explain key architectural choices and trade-offs.
