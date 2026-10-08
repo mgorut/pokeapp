@@ -16,11 +16,11 @@ export function EvolutionTimeline({ stages, currentId }: Props) {
           {/* No minLevel in current API, so omit arrow label */}
           {stage.stage !== currentId && <span className="text-xs text-slate-400">→</span>}
           <Link
-            to={`/pokemon/${stage.stage}`}
+            to={`/pokemon/${stage.pokeApiId}`}
             className={`flex flex-col items-center rounded-lg p-2 transition hover:bg-slate-50 ${
-              stage.stage === currentId ? 'bg-red-50 ring-2 ring-red-300' : ''
+              stage.pokeApiId === currentId ? 'bg-red-50 ring-2 ring-red-300' : ''
             }`}
-            aria-current={stage.stage === currentId ? 'page' : undefined}
+            aria-current={stage.pokeApiId === currentId ? 'page' : undefined}
           >
             <img src={stage.sprite} alt={stage.name} width={56} height={56} className="h-14 w-14 [image-rendering:pixelated]" />
             <span className="mt-1 text-xs font-semibold capitalize">{stage.name}</span>

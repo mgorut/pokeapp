@@ -35,6 +35,7 @@ export interface Statistics {
 
 export interface EvolutionStage {
   stage: number;
+  pokeApiId: number;
   name: string;
   sprite: string;
 }

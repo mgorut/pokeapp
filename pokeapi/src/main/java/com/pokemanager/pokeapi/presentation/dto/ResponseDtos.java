@@ -71,10 +71,10 @@ public final class ResponseDtos {
         }
     }
 
-    public record EvolutionStageDto(int stage, String name, String sprite) {
+    public record EvolutionStageDto(int stage, int pokeApiId, String name, String sprite) {
 
         public static EvolutionStageDto from(EvolutionStage e) {
-            return new EvolutionStageDto(e.stage(), e.name(), e.sprite());
+            return new EvolutionStageDto(e.stage(), e.pokeApiId(), e.name(), e.sprite());
         }
     }
 

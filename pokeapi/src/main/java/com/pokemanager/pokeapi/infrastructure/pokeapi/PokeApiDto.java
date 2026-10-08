@@ -103,7 +103,7 @@ final class PokeApiDto {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    record ChainNode(EvoSpecies species, List<ChainNode> evolvesTo) {
+    record ChainNode(EvoSpecies species, @JsonProperty("evolves_to") List<ChainNode> evolvesTo) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

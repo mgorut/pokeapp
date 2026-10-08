@@ -195,13 +195,27 @@ public class PokeApiClientAdapter implements PokeApiClient {
         if (node == null || node.species() == null) {
             return;
         }
+        int pokeApiId = extractIdFromUrl(node.species().url());
         String sprite = http.getOptional("/pokemon/" + node.species().name(),
                         PokeApiDto.PokemonFullResponse.class)
                 .map(p -> pickImage(p.sprites()))
                 .orElse(null);
-        out.add(new EvolutionStage(stage, node.species().name(), sprite));
+        out.add(new EvolutionStage(stage, pokeApiId, node.species().name(), sprite));
         if (node.evolvesTo() != null) {
             node.evolvesTo().forEach(next -> walk(next, stage + 1, out));
+        }
+    }
+
+    private int extractIdFromUrl(String url) {
+        if (url == null) {
+            return 0;
+        }
+        String trimmed = url.replaceAll("/+$", "");
+        int slash = trimmed.lastIndexOf('/');
+        try {
+            return Integer.parseInt(trimmed.substring(slash + 1));
+        } catch (Exception e) {
+            return 0;
         }
     }
 
