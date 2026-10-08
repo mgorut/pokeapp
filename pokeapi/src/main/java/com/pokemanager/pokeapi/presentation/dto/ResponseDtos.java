@@ -77,7 +77,7 @@ public final class ResponseDtos {
     }
 
     /** US03/US04 local entity representation, including version for optimistic locking. */
-    public record LocalPokemonDto(UUID id, int pokeapiId, String name,
+    public record LocalPokemonDto(UUID uuid, int pokeapiId, String name,
                                   String localizedName, String geographicMetadata,
                                   List<String> internalClassificationTags,
                                   Instant syncedAt, long version) {
