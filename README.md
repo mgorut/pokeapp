@@ -305,3 +305,11 @@ pokeapp/
 - [x] docker-compose with named volume, network isolation, `.env` variables, healthchecks, `service_healthy` startup ordering
 - [x] No hardcoded secrets (`.env.example` provided; strong `JWT_SECRET` enforced ≥32 chars)
 - [x] No symlinks or unrelated files in the repository
+
+## ⚠️ Legal Notice and Copyright
+
+This repository is **public solely for technical evaluation purposes** as part of a selection process.
+
+The code is protected by copyright (**All Rights Reserved**). 
+Any use, copying, modification, or distribution for any other purpose is strictly prohibited without the express authorization of the author. 
+Please refer to the [LICENSE](LICENSE.md) file for more details.
