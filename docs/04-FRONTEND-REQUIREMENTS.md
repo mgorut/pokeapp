@@ -53,7 +53,7 @@ Build a modern, responsive frontend that consumes the PokéManager API. Primary 
 ### Component Organization
 ```text
 src/
-├── components/           # Reusable UI components
+├── components/          # Reusable UI components
 │   ├── ui/              # Button, Input, Card, Modal, Toast
 │   └── layout/          # Header, Footer, Sidebar
 ├── features/            # Feature-based modules
