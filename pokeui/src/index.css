@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Design tokens for the PokéManager theme */
+@theme {
+  --color-poke-red: #dc2626;
+  --color-poke-dark: #0f172a;
+}
+
+html, body, #root {
+  height: 100%;
+}
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
