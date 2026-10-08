@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PokemonUpdateService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.application.service</a> &gt; <span class="el_source">PokemonUpdateService.java</span></div><h1>PokemonUpdateService.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.application.service;
+
+import com.pokemanager.pokeapi.domain.exception.InvalidPayloadException;
+import com.pokemanager.pokeapi.domain.exception.PokemonNotFoundException;
+import com.pokemanager.pokeapi.domain.model.LocalPokemon;
+import com.pokemanager.pokeapi.domain.repository.LocalPokemonRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * US04 — Local data modification use case.
+ *
+ * Business rules enforced here (independent of HTTP concerns):
+ * - target must exist locally (else 404-mapped exception);
+ * - tags list is normalized (trimmed, lower-cased, de-duplicated) and rejected
+ *   when empty after normalization (400-mapped exception);
+ * - optimistic locking: caller supplies the version it read; mismatches raise
+ *   ConcurrentModificationException (409-mapped) instead of silently clobbering.
+ */
+@Service
+public class PokemonUpdateService {
+
+    static final int MAX_TAGS = 10;
+
+    private final LocalPokemonRepository localPokemonRepository;
+
+<span class="fc" id="L30">    public PokemonUpdateService(LocalPokemonRepository localPokemonRepository) {</span>
+<span class="fc" id="L31">        this.localPokemonRepository = localPokemonRepository;</span>
+<span class="fc" id="L32">    }</span>
+
+    @Transactional
+    public LocalPokemon update(UUID id,
+                               String localizedName,
+                               String geographicMetadata,
+                               List&lt;String&gt; internalClassificationTags,
+                               long expectedVersion) {
+
+<span class="fc" id="L41">        LocalPokemon pokemon = localPokemonRepository.findById(id)</span>
+<span class="fc" id="L42">                .orElseThrow(() -&gt; PokemonNotFoundException.forIdentifier(&quot;local id &quot; + id));</span>
+
+<span class="fc" id="L44">        List&lt;String&gt; normalized = normalizeTags(internalClassificationTags);</span>
+
+<span class="fc" id="L46">        pokemon.applyUpdate(trimToNull(localizedName), trimToNull(geographicMetadata),</span>
+                normalized, expectedVersion);
+
+<span class="fc" id="L49">        return localPokemonRepository.save(pokemon);</span>
+    }
+
+    /** Trim/lowercase/dedupe; reject when nothing meaningful remains or too many tags. */
+    private List&lt;String&gt; normalizeTags(List&lt;String&gt; raw) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (raw == null) {</span>
+<span class="fc" id="L55">            throw new InvalidPayloadException(&quot;internalClassificationTags&quot;, &quot;must not be empty&quot;);</span>
+        }
+<span class="fc" id="L57">        List&lt;String&gt; normalized = raw.stream()</span>
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">                .filter(t -&gt; t != null &amp;&amp; !t.isBlank())</span>
+<span class="fc" id="L59">                .map(t -&gt; t.trim().toLowerCase())</span>
+<span class="fc" id="L60">                .distinct()</span>
+<span class="fc" id="L61">                .toList();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (normalized.isEmpty()) {</span>
+<span class="fc" id="L63">            throw new InvalidPayloadException(&quot;internalClassificationTags&quot;, &quot;must contain at least one non-blank tag&quot;);</span>
+        }
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (normalized.size() &gt; MAX_TAGS) {</span>
+<span class="fc" id="L66">            throw new InvalidPayloadException(&quot;internalClassificationTags&quot;, &quot;at most &quot; + MAX_TAGS + &quot; tags allowed&quot;);</span>
+        }
+<span class="fc" id="L68">        return normalized;</span>
+    }
+
+    private String trimToNull(String value) {
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        return value == null || value.isBlank() ? null : value.trim();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

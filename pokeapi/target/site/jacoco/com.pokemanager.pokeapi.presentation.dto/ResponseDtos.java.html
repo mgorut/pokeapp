@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResponseDtos.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.presentation.dto</a> &gt; <span class="el_source">ResponseDtos.java</span></div><h1>ResponseDtos.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.presentation.dto;
+
+import com.pokemanager.pokeapi.domain.model.EvolutionStage;
+import com.pokemanager.pokeapi.domain.model.LocalPokemon;
+import com.pokemanager.pokeapi.domain.model.PageResult;
+import com.pokemanager.pokeapi.domain.model.PokemonDetail;
+import com.pokemanager.pokeapi.domain.model.PokemonSummary;
+import com.pokemanager.pokeapi.domain.model.Statistics;
+import com.pokemanager.pokeapi.domain.model.User;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Response DTOs (presentation contract). Records with static factories keep the
+ * domain &lt;-&gt; wire mapping in one place; the JSON shapes match the acceptance
+ * criteria of US01-US04 exactly.
+ */
+public final class ResponseDtos {
+
+    private ResponseDtos() {
+    }
+
+    /** US01 page envelope. */
+<span class="fc" id="L26">    public record PokemonPageDto(List&lt;PokemonSummaryDto&gt; content,</span>
+                                 int page, int size,
+                                 long totalElements, int totalPages) {
+
+        public static PokemonPageDto from(PageResult&lt;PokemonSummary&gt; result) {
+<span class="fc" id="L31">            return new PokemonPageDto(</span>
+<span class="fc" id="L32">                    result.content().stream().map(PokemonSummaryDto::from).toList(),</span>
+<span class="fc" id="L33">                    result.page(), result.size(), result.totalElements(), result.totalPages());</span>
+        }
+    }
+
+<span class="fc" id="L37">    public record PokemonSummaryDto(Integer id, String name, String sprite,</span>
+                                    String category, Double mass, List&lt;String&gt; skills) {
+
+        public static PokemonSummaryDto from(PokemonSummary s) {
+<span class="fc" id="L41">            return new PokemonSummaryDto(s.id(), s.name(), s.sprite(), s.category(),</span>
+<span class="fc" id="L42">                    s.mass(), s.skills());</span>
+        }
+    }
+
+    /** US02 detail. Field names follow the spec sample (specialAttack etc.). */
+<span class="nc" id="L47">    public record PokemonDetailDto(Integer id, String name, String image,</span>
+                                   StatisticsDto statistics,
+                                   String narrativeDescription,
+                                   List&lt;EvolutionStageDto&gt; evolutionaryLineage,
+                                   boolean syncedLocally) {
+
+        public static PokemonDetailDto from(PokemonDetail d) {
+<span class="nc" id="L54">            return new PokemonDetailDto(</span>
+<span class="nc" id="L55">                    d.id(), d.name(), d.image(),</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                    d.statistics() == null ? null : StatisticsDto.from(d.statistics()),</span>
+<span class="nc" id="L57">                    d.narrativeDescription(),</span>
+<span class="nc" id="L58">                    d.evolutionaryLineage().stream().map(EvolutionStageDto::from).toList(),</span>
+<span class="nc" id="L59">                    d.syncedLocally());</span>
+        }
+    }
+
+<span class="nc" id="L63">    public record StatisticsDto(Integer hp, Integer attack, Integer defense,</span>
+                                Integer specialAttack, Integer specialDefense, Integer speed) {
+
+        public static StatisticsDto from(Statistics s) {
+<span class="nc" id="L67">            return new StatisticsDto(s.hp(), s.attack(), s.defense(),</span>
+<span class="nc" id="L68">                    s.specialAttack(), s.specialDefense(), s.speed());</span>
+        }
+    }
+
+<span class="nc" id="L72">    public record EvolutionStageDto(int stage, String name, String sprite) {</span>
+
+        public static EvolutionStageDto from(EvolutionStage e) {
+<span class="nc" id="L75">            return new EvolutionStageDto(e.stage(), e.name(), e.sprite());</span>
+        }
+    }
+
+    /** US03/US04 local entity representation, including version for optimistic locking. */
+<span class="nc" id="L80">    public record LocalPokemonDto(UUID id, int pokeapiId, String name,</span>
+                                  String localizedName, String geographicMetadata,
+                                  List&lt;String&gt; internalClassificationTags,
+                                  Instant syncedAt, long version) {
+
+        public static LocalPokemonDto from(LocalPokemon p) {
+<span class="nc" id="L86">            return new LocalPokemonDto(p.getId(), p.getPokeApiId(), p.getName(),</span>
+<span class="nc" id="L87">                    p.getLocalizedName(), p.getGeographicMetadata(),</span>
+<span class="nc" id="L88">                    p.getInternalClassificationTags(), p.getSyncedAt(), p.getVersion());</span>
+        }
+    }
+
+    /** Login response. */
+<span class="fc" id="L93">    public record AuthResponseDto(String token, String tokenType, long expiresIn,</span>
+                                  UserInfoDto user) {
+
+        public static AuthResponseDto of(String token, long expiresIn, User user) {
+<span class="fc" id="L97">            return new AuthResponseDto(token, &quot;Bearer&quot;, expiresIn, UserInfoDto.from(user));</span>
+        }
+    }
+
+    /** GET /api/auth/me + registration echo (never includes the hash). */
+<span class="fc" id="L102">    public record UserInfoDto(UUID id, String username, String email, String role, Instant createdAt) {</span>
+
+        public static UserInfoDto from(User u) {
+<span class="fc" id="L105">            return new UserInfoDto(u.getId(), u.getUsername(), u.getEmail(), u.getRole(), u.getCreatedAt());</span>
+        }
+    }
+
+    /** Uniform error body incl. optional field-level errors (US04 requirement). */
+<span class="fc" id="L110">    public record ErrorDto(int status, String error, String message, List&lt;FieldErrorDto&gt; fields) {</span>
+
+        public static ErrorDto of(int status, String error, String message) {
+<span class="fc" id="L113">            return new ErrorDto(status, error, message, List.of());</span>
+        }
+
+        public static ErrorDto withFields(int status, String error, String message, List&lt;FieldErrorDto&gt; fields) {
+<span class="fc" id="L117">            return new ErrorDto(status, error, message, fields);</span>
+        }
+    }
+
+<span class="fc" id="L121">    public record FieldErrorDto(String field, String message) {</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

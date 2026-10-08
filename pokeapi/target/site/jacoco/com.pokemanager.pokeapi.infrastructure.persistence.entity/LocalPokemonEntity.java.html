@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalPokemonEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.infrastructure.persistence.entity</a> &gt; <span class="el_source">LocalPokemonEntity.java</span></div><h1>LocalPokemonEntity.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.infrastructure.persistence.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.time.Instant;
+import java.util.UUID;
+
+/**
+ * JPA entity for the {@code pokemon_local} table (US03/US04).
+ *
+ * Design decisions:
+ * - {@code @Version} column implements optimistic locking at the persistence level,
+ *   complementing the domain-level version check in LocalPokemon.applyUpdate.
+ * - Tags are stored as a JSON array string in a TEXT/JSONB-compatible column and
+ *   (de)serialized by the mapper — avoids ElementCollection join tables and keeps
+ *   the migration's JSONB column usable from raw SQL.
+ */
+@Entity
+@Table(name = &quot;pokemon_local&quot;)
+public class LocalPokemonEntity {
+
+    @Id
+    @Column(name = &quot;id&quot;, updatable = false, nullable = false)
+    private UUID id;
+
+    @Column(name = &quot;pokeapi_id&quot;, unique = true, nullable = false)
+    private int pokeApiId;
+
+    @Column(name = &quot;name&quot;, length = 100, nullable = false)
+    private String name;
+
+    @Column(name = &quot;localized_name&quot;, length = 200)
+    private String localizedName;
+
+    @Column(name = &quot;geographic_metadata&quot;, columnDefinition = &quot;text&quot;)
+    private String geographicMetadata;
+
+    /**
+     * JSON-encoded list of classification tags. Portable mapping: VARCHAR under
+     * H2 (tests) and jsonb under Postgres (owned by the Flyway migration).
+     * Hibernate binds it as a plain string, which Postgres accepts for jsonb
+     * columns because varchar-&gt;jsonb is an implicit binary-coercible cast.
+     */
+    @Column(name = &quot;internal_classification_tags&quot;, length = 4000)
+    private String internalClassificationTags;
+
+    @Column(name = &quot;synced_at&quot;, nullable = false)
+    private Instant syncedAt;
+
+    /**
+     * Optimistic locking is driven by the DOMAIN version (checked in
+     * LocalPokemon.applyUpdate and incremented there). We deliberately do NOT
+     * annotate this with @Version: the adapter persists whole aggregates built
+     * from freshly-loaded domain objects, so Hibernate's own lock would double-
+     * increment the counter on every save. The column value therefore always
+     * mirrors the aggregate's business version, which clients round-trip.
+     */
+    @Column(name = &quot;version&quot;, nullable = false)
+    private long version;
+
+    // Public no-arg constructor: required by JPA; the persistence adapters
+    // (different package) instantiate entities for domain&lt;-&gt;entity mapping.
+<span class="nc" id="L66">    public LocalPokemonEntity() {</span>
+<span class="nc" id="L67">    }</span>
+
+<span class="nc" id="L69">    public UUID getId() { return id; }</span>
+<span class="nc" id="L70">    public void setId(UUID id) { this.id = id; }</span>
+
+<span class="nc" id="L72">    public int getPokeApiId() { return pokeApiId; }</span>
+<span class="nc" id="L73">    public void setPokeApiId(int pokeApiId) { this.pokeApiId = pokeApiId; }</span>
+
+<span class="nc" id="L75">    public String getName() { return name; }</span>
+<span class="nc" id="L76">    public void setName(String name) { this.name = name; }</span>
+
+<span class="nc" id="L78">    public String getLocalizedName() { return localizedName; }</span>
+<span class="nc" id="L79">    public void setLocalizedName(String localizedName) { this.localizedName = localizedName; }</span>
+
+<span class="nc" id="L81">    public String getGeographicMetadata() { return geographicMetadata; }</span>
+<span class="nc" id="L82">    public void setGeographicMetadata(String geographicMetadata) { this.geographicMetadata = geographicMetadata; }</span>
+
+<span class="nc" id="L84">    public String getInternalClassificationTags() { return internalClassificationTags; }</span>
+<span class="nc" id="L85">    public void setInternalClassificationTags(String internalClassificationTags) { this.internalClassificationTags = internalClassificationTags; }</span>
+
+<span class="nc" id="L87">    public Instant getSyncedAt() { return syncedAt; }</span>
+<span class="nc" id="L88">    public void setSyncedAt(Instant syncedAt) { this.syncedAt = syncedAt; }</span>
+
+<span class="nc" id="L90">    public long getVersion() { return version; }</span>
+<span class="nc" id="L91">    public void setVersion(long version) { this.version = version; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

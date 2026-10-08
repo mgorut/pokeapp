@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PokeApiDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.infrastructure.pokeapi</a> &gt; <span class="el_source">PokeApiDto.java</span></div><h1>PokeApiDto.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.infrastructure.pokeapi;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Jackson-bound DTOs mirroring the raw PokeAPI JSON shapes.
+ * {@code @JsonIgnoreProperties(ignoreUnknown = true)} on every record keeps the
+ * adapter resilient to upstream schema additions (PokeAPI evolves frequently).
+ */
+final class PokeApiDto {
+
+    private PokeApiDto() {
+    }
+
+    /** GET /pokemon?limit&amp;offset — list envelope. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L21">    record PokemonListResponse(int count, String next, String previous, List&lt;NamedApiResource&gt; results) {</span>
+    }
+
+    /** Common {name, url} resource used across PokeAPI listings. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L26">    record NamedApiResource(String name, String url) {</span>
+        /** Extract the numeric id from urls like https://pokeapi.co/api/v2/pokemon/1/ */
+        Integer extractId() {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if (url == null) {</span>
+<span class="nc" id="L30">                return null;</span>
+            }
+<span class="nc" id="L32">            String trimmed = url.replaceAll(&quot;/+$&quot;, &quot;&quot;);</span>
+<span class="nc" id="L33">            int slash = trimmed.lastIndexOf('/');</span>
+            try {
+<span class="nc" id="L35">                return Integer.parseInt(trimmed.substring(slash + 1));</span>
+<span class="nc" id="L36">            } catch (Exception e) {</span>
+<span class="nc" id="L37">                return null;</span>
+            }
+        }
+    }
+
+    /** GET /pokemon/{id}. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L44">    record PokemonDetailResponse(Integer id,</span>
+                                 String name,
+                                 Integer weight, // hectograms in PokeAPI
+                                 List&lt;AbilityEntry&gt; abilities,
+                                 List&lt;MoveEntry&gt; moves,
+                                 List&lt;TypeEntry&gt; types,
+                                 Sprites sprites) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L54">    record AbilityEntry(@JsonProperty(&quot;is_hidden&quot;) boolean hidden, AbilityRef ability) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L58">    record AbilityRef(String name, String url) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L62">    record MoveEntry(MoveRef move) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L66">    record MoveRef(String name, String url) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L70">    record TypeEntry(int slot, TypeRef type) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L74">    record TypeRef(String name, String url) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L78">    record Sprites(@JsonProperty(&quot;front_default&quot;) String frontDefault,</span>
+                   @JsonProperty(&quot;official-artwork&quot;) OfficialArtwork officialArtwork) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L83">    record OfficialArtwork(@JsonProperty(&quot;front_default&quot;) String frontDefault) {</span>
+    }
+
+    /** GET /pokemon-species/{id}. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L88">    record SpeciesResponse(@JsonProperty(&quot;flavor_text_entries&quot;) List&lt;FlavorTextEntry&gt; flavorTextEntries,</span>
+                           @JsonProperty(&quot;evolution_chain&quot;) EvolutionChainRef evolutionChain) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L93">    record FlavorTextEntry(@JsonProperty(&quot;flavor_text&quot;) String flavorText, NamedApiResource language) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L97">    record EvolutionChainRef(String url) {</span>
+    }
+
+    /** GET /evolution-chain/{id}. Chain nodes are recursive. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L102">    record EvolutionChainResponse(ChainNode chain) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L106">    record ChainNode(EvoSpecies species, List&lt;ChainNode&gt; evolvesTo) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L110">    record EvoSpecies(String name, String url) {</span>
+    }
+
+    /** Generic stat payload (used for detail stats). */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L115">    record StatEntry(@JsonProperty(&quot;base_stat&quot;) int baseStat, StatRef stat) {</span>
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L119">    record StatRef(String name, String url) {</span>
+    }
+
+    /** Detail response WITH stats — separate record so PokemonDetailResponse stays lean above. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+<span class="nc" id="L124">    record PokemonFullResponse(Integer id,</span>
+                               String name,
+                               Integer weight,
+                               List&lt;AbilityEntry&gt; abilities,
+                               List&lt;MoveEntry&gt; moves,
+                               List&lt;TypeEntry&gt; types,
+                               List&lt;StatEntry&gt; stats,
+                               Sprites sprites) {
+    }
+
+    /** Map of stat names to values helper kept out of records. */
+    static Map&lt;String, Integer&gt; statsByName(List&lt;StatEntry&gt; stats) {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (stats == null) {</span>
+<span class="nc" id="L137">            return Map.of();</span>
+        }
+<span class="nc" id="L139">        return stats.stream()</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">                .filter(s -&gt; s.stat() != null &amp;&amp; s.stat().name() != null)</span>
+<span class="nc" id="L141">                .collect(java.util.stream.Collectors.toMap(</span>
+<span class="nc" id="L142">                        s -&gt; s.stat().name(), s -&gt; s.baseStat(), (a, b) -&gt; a));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

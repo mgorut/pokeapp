@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PokemonSyncService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.application.service</a> &gt; <span class="el_source">PokemonSyncService.java</span></div><h1>PokemonSyncService.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.application.service;
+
+import com.pokemanager.pokeapi.domain.exception.AlreadySyncedException;
+import com.pokemanager.pokeapi.domain.model.LocalPokemon;
+import com.pokemanager.pokeapi.domain.model.PokemonDetail;
+import com.pokemanager.pokeapi.domain.port.PokeApiClient;
+import com.pokemanager.pokeapi.domain.repository.LocalPokemonRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * US03 — Data synchronization use case.
+ *
+ * Flow (per acceptance criteria):
+ *  1. Fetch full data from PokeAPI (also validates existence -&gt; 404 upstream).
+ *  2. Guard against duplicates -&gt; AlreadySyncedException (HTTP 409).
+ *  3. Persist local record with proprietary fields initialized to defaults.
+ *
+ * Concurrency note: the unique constraint on pokeapi_id is the ultimate guard;
+ * if two requests race past the exists-check we translate the constraint
+ * violation into the same 409 domain exception instead of leaking a 500.
+ */
+@Service
+public class PokemonSyncService {
+
+<span class="fc" id="L29">    private static final Logger log = LoggerFactory.getLogger(PokemonSyncService.class);</span>
+
+    private final PokeApiClient pokeApiClient;
+    private final LocalPokemonRepository localPokemonRepository;
+
+    public PokemonSyncService(PokeApiClient pokeApiClient,
+<span class="fc" id="L35">                              LocalPokemonRepository localPokemonRepository) {</span>
+<span class="fc" id="L36">        this.pokeApiClient = pokeApiClient;</span>
+<span class="fc" id="L37">        this.localPokemonRepository = localPokemonRepository;</span>
+<span class="fc" id="L38">    }</span>
+
+    @Transactional
+    public LocalPokemon sync(String idOrName) {
+<span class="fc" id="L42">        PokemonDetail detail = pokeApiClient.fetchDetail(idOrName); // step 1 (may throw 404/503)</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (localPokemonRepository.existsByPokeApiId(detail.id())) { // step 2</span>
+<span class="fc" id="L45">            throw new AlreadySyncedException(detail.name());</span>
+        }
+
+        try {
+<span class="fc" id="L49">            LocalPokemon created = LocalPokemon.newlySynced(detail.id(), detail.name()); // step 3</span>
+<span class="fc" id="L50">            return localPokemonRepository.save(created);</span>
+<span class="fc" id="L51">        } catch (DataIntegrityViolationException race) {</span>
+            // Unique-constraint violation =&gt; concurrent duplicate sync. Same user-facing outcome.
+<span class="fc" id="L53">            log.warn(&quot;Duplicate sync race detected for pokeapi id {}&quot;, detail.id());</span>
+<span class="fc" id="L54">            throw new AlreadySyncedException(detail.name());</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
