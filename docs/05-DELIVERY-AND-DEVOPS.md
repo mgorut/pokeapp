@@ -1,5 +1,3 @@
-## 📄 File 5: `05-DELIVERY-AND-DEVOPS.md`
-
 # 🚀 Delivery & DevOps Requirements
 
 ## Context
