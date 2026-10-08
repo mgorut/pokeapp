@@ -83,7 +83,8 @@ public class PokeApiClientAdapter implements PokeApiClient {
                 toStatistics(pokemon.stats()),
                 narrative,
                 lineage,
-                false); // syncedLocally is applied by the application service
+                false, // syncedLocally is applied by the application service
+                null); // localUuid is applied by the application service
     }
 
     // ---- mapping helpers (package-visible for unit tests) ----

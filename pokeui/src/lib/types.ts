@@ -53,7 +53,7 @@ export interface PokemonDetail {
 // US03/US04 – local record
 export interface LocalPokemon {
   uuid: string;
-  pokeApiId: number;
+  pokeapiId: number;
   name: string;
   spriteUrl: string;
   localizedName: string | null;

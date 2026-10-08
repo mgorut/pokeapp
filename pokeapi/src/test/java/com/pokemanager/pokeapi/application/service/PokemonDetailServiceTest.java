@@ -42,7 +42,7 @@ class PokemonDetailServiceTest {
                 "An unusual grass-pokémon.",
                 List.of(new EvolutionStage(1, "bulbasaur", "s1.png"),
                         new EvolutionStage(2, "ivysaur", "s2.png")),
-                synced);
+                synced, null);
     }
 
     @Test
@@ -63,10 +63,11 @@ class PokemonDetailServiceTest {
     void marksUnsyncedPokemon() {
         when(pokeApiClient.fetchDetail("charizard")).thenReturn(
                 new PokemonDetail(6, "charizard", null, new Statistics(78, 84, 78, 109, 85, 100),
-                        null, List.of(), false));
+                        null, List.of(), false, null));
         when(localPokemonRepository.existsByPokeApiId(6)).thenReturn(false);
 
         assertThat(service.getDetail("charizard").syncedLocally()).isFalse();
+        assertThat(service.getDetail("charizard").localUuid()).isNull();
     }
 
     @Test

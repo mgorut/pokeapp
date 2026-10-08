@@ -16,15 +16,17 @@ import { StatBars } from './StatBars';
  * evolution lineage and the "Sync to Local" action (US03) for authenticated users.
  */
 export function PokemonDetailPage() {
-  const { idOrName = '' } = useParams();
+  const { idOrName } = useParams();
   const { isAuthenticated } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Only run the query if we have a valid idOrName (prevents 404 on invalid routes)
   const { data, isPending, error } = useQuery({
-    queryKey: queryKeys.pokemonDetail(idOrName),
-    queryFn: () => fetchPokemonDetail(idOrName),
+    queryKey: queryKeys.pokemonDetail(idOrName ?? ''),
+    queryFn: () => fetchPokemonDetail(idOrName!),
+    enabled: !!idOrName,
   });
 
   const sync = useMutation({

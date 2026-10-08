@@ -96,7 +96,7 @@ class PokemonApiIntegrationTest {
                 "A strange seed was planted on its back at birth.",
                 List.of(new EvolutionStage(1, "bulbasaur", "s1.png"),
                         new EvolutionStage(2, "ivysaur", "s2.png")),
-                false));
+                false, null));
         // bulbasaur IS in the seed data -> syncedLocally must come out true.
         mvc.perform(get("/api/public/pokemon/1"))
                 .andExpect(status().isOk())
@@ -129,7 +129,7 @@ class PokemonApiIntegrationTest {
         when(pokeApiClient.fetchDetail("pikachu")).thenReturn(new PokemonDetail(
                 25, "pikachu", "p.png",
                 new Statistics(35, 55, 40, 50, 50, 90), "It keeps its tail raised...",
-                List.of(), false));
+                List.of(), false, null));
 
         String token = demoToken();
         mvc.perform(post("/api/protected/pokemon/pikachu/sync").header("Authorization", "Bearer " + token))
@@ -147,7 +147,7 @@ class PokemonApiIntegrationTest {
         // local store -> the port stub is required even though the DB guard fails.
         when(pokeApiClient.fetchDetail("bulbasaur")).thenReturn(new PokemonDetail(
                 1, "bulbasaur", "s.png",
-                new Statistics(45, 49, 49, 65, 65, 45), "seed", List.of(), true));
+                new Statistics(45, 49, 49, 65, 65, 45), "seed", List.of(), true, null));
 
         String token = demoToken();
         mvc.perform(post("/api/protected/pokemon/bulbasaur/sync").header("Authorization", "Bearer " + token))

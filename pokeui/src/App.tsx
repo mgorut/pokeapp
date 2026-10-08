@@ -28,8 +28,7 @@ export default function App() {
               <Navbar />
               <Routes>
                 <Route path="/" element={<PokemonListPage />} />
-                <Route path="/pokemon/:idOrName" element={<PokemonDetailPage />} />
-                {/* US04 – editing requires an authenticated session */}
+                {/* US04 – editing requires an authenticated session (must come before :idOrName) */}
                 <Route
                   path="/pokemon/:uuid/edit"
                   element={
@@ -38,6 +37,7 @@ export default function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/pokemon/:idOrName" element={<PokemonDetailPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,3 +1,7 @@
 # build
 pokeapi/target/
 pokeui/node_modules/
+
+# configuration
+.env
+!.env.example

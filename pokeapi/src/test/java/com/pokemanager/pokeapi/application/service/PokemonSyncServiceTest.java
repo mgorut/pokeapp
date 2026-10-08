@@ -35,7 +35,7 @@ class PokemonSyncServiceTest {
     }
 
     private static PokemonDetail bulbasaur() {
-        return new PokemonDetail(1, "bulbasaur", "img", null, null, java.util.List.of(), false);
+        return new PokemonDetail(1, "bulbasaur", "img", null, null, java.util.List.of(), false, null);
     }
 
     @Test

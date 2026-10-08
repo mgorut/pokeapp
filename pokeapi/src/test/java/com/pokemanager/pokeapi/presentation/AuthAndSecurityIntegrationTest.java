@@ -89,7 +89,7 @@ class AuthAndSecurityIntegrationTest {
     void syncDuplicateFromSeed() throws Exception {
         when(pokeApiClient.fetchDetail("bulbasaur")).thenReturn(
                 new com.pokemanager.pokeapi.domain.model.PokemonDetail(
-                        1, "bulbasaur", "img", null, null, List.of(), false));
+                        1, "bulbasaur", "img", null, null, List.of(), false, null));
 
         String token = obtainDemoToken();
 

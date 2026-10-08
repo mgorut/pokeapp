@@ -48,7 +48,8 @@ public final class ResponseDtos {
                                    StatisticsDto statistics,
                                    String narrativeDescription,
                                    List<EvolutionStageDto> evolutionaryLineage,
-                                   boolean syncedLocally) {
+                                   boolean syncedLocally,
+                                   String localUuid) {
 
         public static PokemonDetailDto from(PokemonDetail d) {
             return new PokemonDetailDto(
@@ -56,7 +57,8 @@ public final class ResponseDtos {
                     d.statistics() == null ? null : StatisticsDto.from(d.statistics()),
                     d.narrativeDescription(),
                     d.evolutionaryLineage().stream().map(EvolutionStageDto::from).toList(),
-                    d.syncedLocally());
+                    d.syncedLocally(),
+                    d.localUuid());
         }
     }
 

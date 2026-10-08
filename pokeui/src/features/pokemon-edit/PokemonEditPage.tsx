@@ -36,6 +36,7 @@ export function PokemonEditPage() {
   const { data: local, isPending, error } = useQuery({
     queryKey: queryKeys.localPokemon(uuid),
     queryFn: () => fetchLocalPokemon(uuid),
+    enabled: !!uuid, // Only fetch when we have a valid UUID from the route
   });
 
   const {
@@ -75,7 +76,7 @@ export function PokemonEditPage() {
       queryClient.setQueryData(queryKeys.localPokemon(uuid), updated);
       queryClient.invalidateQueries({ queryKey: ['pokemon'] });
       toast.push('success', 'Changes saved.');
-      navigate(`/pokemon/${updated.pokeApiId}`);
+      navigate(`/pokemon/${updated.pokeapiId}`);
     },
     onError: (err) => {
       const apiErr = toApiError(err);
@@ -116,7 +117,7 @@ export function PokemonEditPage() {
   return (
     <main className="mx-auto max-w-xl px-4 py-8">
       <div className="mb-6 flex items-center gap-4">
-        <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${local.pokeApiId}.png`} alt={local.name} width={64} height={64} className="h-16 w-16 [image-rendering:pixelated]" />
+        <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${local.pokeapiId}.png`} alt={local.name} width={64} height={64} className="h-16 w-16 [image-rendering:pixelated]" />
         <div>
           <h1 className="text-2xl font-extrabold capitalize">Edit {local.name}</h1>
           <p className="text-xs text-slate-500">local record v{local.version}</p>
