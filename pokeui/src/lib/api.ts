@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import axios, { AxiosError } from 'axios';
 import type {
   ApiError,
@@ -55,8 +59,6 @@ export function toApiError(err: unknown): ApiError {
   }
   return { status: 0, error: 'UNKNOWN', message: String(err) };
 }
-
-// ---- Auth endpoints -------------------------------------------------------
 export async function apiRegister(username: string, email: string, password: string): Promise<AuthResponse> {
   const { data } = await http.post<AuthResponse>('/auth/register', { username, email, password });
   return data;
@@ -66,8 +68,6 @@ export async function apiLogin(email: string, password: string): Promise<AuthRes
   const { data } = await http.post<AuthResponse>('/auth/login', { email, password });
   return data;
 }
-
-// ---- US01/US02 public endpoints -------------------------------------------
 export async function fetchPokemonList(page: number, size: number): Promise<PageResult<PokemonSummary>> {
   const { data } = await http.get<PageResult<PokemonSummary>>('/public/pokemon', {
     params: { page, size },
@@ -79,8 +79,6 @@ export async function fetchPokemonDetail(idOrName: string): Promise<PokemonDetai
   const { data } = await http.get<PokemonDetail>(`/public/pokemon/${idOrName}`);
   return data;
 }
-
-// ---- US03/US04 protected endpoints ----------------------------------------
 export async function syncPokemon(pokeApiId: number): Promise<LocalPokemon> {
   const { data } = await http.post<LocalPokemon>(`/protected/pokemon/${pokeApiId}/sync`);
   return data;

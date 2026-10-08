@@ -1,3 +1,7 @@
+-- Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+-- This source code is licensed under the Restricted Use License found in the
+-- LICENSE.md file in the root directory of this source tree.
+
 -- V2: Seed data required by the delivery spec (05-DELIVERY-AND-DEVOPS.md)
 --  * one demo account: demo@pokeapi.co / Demo123!  (BCrypt cost 12 hash below)
 --  * three pre-synced Pokemon so the protected edit flow works out of the box.

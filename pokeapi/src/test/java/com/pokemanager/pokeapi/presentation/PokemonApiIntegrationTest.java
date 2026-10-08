@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,10 +57,6 @@ class PokemonApiIntegrationTest {
         return json.readTree(body).get("token").asText();
     }
 
-    // ------------------------------------------------------------------
-    // US01 — enumeration (public, paginated, cached)
-    // ------------------------------------------------------------------
-
     @Test
     @DisplayName("US01: public list returns page metadata and mapped summaries")
     void listPage() throws Exception {
@@ -78,14 +81,9 @@ class PokemonApiIntegrationTest {
         mvc.perform(get("/api/public/pokemon").param("size", "51"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                // ErrorDto exposes a flat list of {field,message} objects.
                 .andExpect(jsonPath("$.fields[?(@.field == 'size')].message")
                         .value(hasItem("must be <= 50")));
     }
-
-    // ------------------------------------------------------------------
-    // US02 — detail (stats, narrative, lineage)
-    // ------------------------------------------------------------------
 
     @Test
     @DisplayName("US02: detail by id exposes statistics, narrative and lineage; syncedLocally from DB")
@@ -94,10 +92,9 @@ class PokemonApiIntegrationTest {
                 1, "bulbasaur", "s1.png",
                 new Statistics(45, 49, 49, 65, 65, 45),
                 "A strange seed was planted on its back at birth.",
-                List.of(new EvolutionStage(1, "bulbasaur", "s1.png"),
-                        new EvolutionStage(2, "ivysaur", "s2.png")),
+                List.of(new EvolutionStage(1, 1, "bulbasaur", "s1.png"),
+                        new EvolutionStage(2, 2, "ivysaur", "s2.png")),
                 false, null));
-        // bulbasaur IS in the seed data -> syncedLocally must come out true.
         mvc.perform(get("/api/public/pokemon/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -118,14 +115,9 @@ class PokemonApiIntegrationTest {
                 .andExpect(jsonPath("$.status").value(404));
     }
 
-    // ------------------------------------------------------------------
-    // US03 — sync (protected)
-    // ------------------------------------------------------------------
-
     @Test
     @DisplayName("US03: authenticated sync persists record and returns 201 + Location")
     void syncCreatesRecord() throws Exception {
-        // pikachu is NOT part of the seed set -> fresh sync allowed.
         when(pokeApiClient.fetchDetail("pikachu")).thenReturn(new PokemonDetail(
                 25, "pikachu", "p.png",
                 new Statistics(35, 55, 40, 50, 50, 90), "It keeps its tail raised...",
@@ -143,8 +135,6 @@ class PokemonApiIntegrationTest {
     @Test
     @DisplayName("US03: syncing a seeded pokemon conflicts with 409")
     void syncDuplicateConflict() throws Exception {
-        // Sync service fetches upstream FIRST (validation step), then checks the
-        // local store -> the port stub is required even though the DB guard fails.
         when(pokeApiClient.fetchDetail("bulbasaur")).thenReturn(new PokemonDetail(
                 1, "bulbasaur", "s.png",
                 new Statistics(45, 49, 49, 65, 65, 45), "seed", List.of(), true, null));
@@ -155,16 +145,10 @@ class PokemonApiIntegrationTest {
                 .andExpect(jsonPath("$.status").value(409));
     }
 
-    // ------------------------------------------------------------------
-    // US04 — local update (protected, optimistic locking)
-    // ------------------------------------------------------------------
-
     @Test
     @DisplayName("US04: full edit round-trip on seeded bulbasaur (read version -> update -> read back)")
     void updateRoundTrip() throws Exception {
         String token = demoToken();
-
-        // 1) Read-back of seeded record: proprietary fields are pre-filled by V2__seed.sql.
         String body = mvc.perform(get("/api/protected/pokemon/00000000-0000-0000-0000-000000000001")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -172,12 +156,9 @@ class PokemonApiIntegrationTest {
                 .andExpect(jsonPath("$.internalClassificationTags", hasSize(4)))
                 .andReturn().getResponse().getContentAsString();
         long version = json.readTree(body).get("version").asLong();
-
-        // 2) Update with the version we just read -> succeeds, version increments.
         Map<String, Object> payload = Map.of(
                 "localizedName", "Bulba",
                 "geographicMetadata", "Johto - union cave",
-                // 4 distinct tags: expected echo must keep all four after normalization
                 "internalClassificationTags", List.of("  STARTER ", "starter", "johto", "gen-2"),
                 "version", version);
         mvc.perform(put("/api/protected/pokemon/00000000-0000-0000-0000-000000000001")
@@ -186,12 +167,9 @@ class PokemonApiIntegrationTest {
                         .content(json.writeValueAsString(payload)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.localizedName").value("Bulba"))
-                // tags normalized server-side: trimmed, lower-cased, de-duplicated
                 .andExpect(jsonPath("$.internalClassificationTags",
                         containsInAnyOrder("starter", "johto", "gen-2")))
                 .andExpect(jsonPath("$.version").value(version + 1));
-
-        // 3) Stale version now loses the race -> 409 concurrent modification.
         payload = Map.of(
                 "localizedName", "Stale",
                 "geographicMetadata", "nowhere",

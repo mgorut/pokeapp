@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -102,7 +109,6 @@ public class SecurityConfig {
                     Map.of("status", status.value(), "error", status.getReasonPhrase(),
                             "message", message));
         } catch (Exception ignored) {
-            // response already committed — nothing sensible left to do inside an error handler
         }
     }
 }

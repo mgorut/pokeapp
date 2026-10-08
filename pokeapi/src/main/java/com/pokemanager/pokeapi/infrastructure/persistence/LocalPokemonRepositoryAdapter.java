@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.persistence;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -51,8 +58,6 @@ public class LocalPokemonRepositoryAdapter implements LocalPokemonRepository {
         return jpa.existsByNameIgnoreCase(name);
     }
 
-    // ---- mapping helpers ----
-
     LocalPokemon toDomain(LocalPokemonEntity e) {
         return new LocalPokemon(e.getId(), e.getPokeApiId(), e.getName(),
                 e.getLocalizedName(), e.getGeographicMetadata(),
@@ -84,9 +89,6 @@ public class LocalPokemonRepositoryAdapter implements LocalPokemonRepository {
             return List.of();
         }
         try {
-            // Defensive normalization: some drivers/Hibernate type mappings can
-            // hand back the jsonb payload as a *quoted JSON string* containing
-            // the array literal (double-encoded). Unwrap one level if so.
             var node = objectMapper.readTree(json);
             if (node.isTextual()) {
                 node = objectMapper.readTree(node.asText());
@@ -96,7 +98,6 @@ public class LocalPokemonRepositoryAdapter implements LocalPokemonRepository {
             }
             return List.of();
         } catch (Exception ex) {
-            // Corrupt tag payload should never 500 a listing; degrade to empty list.
             return List.of();
         }
     }

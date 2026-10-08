@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.pokeapi;
 
 import com.pokemanager.pokeapi.domain.exception.PokeApiUnavailableException;
@@ -25,9 +32,6 @@ public class PokeApiHttpGateway {
     private static final Logger log = LoggerFactory.getLogger(PokeApiHttpGateway.class);
 
     private final RestClient restClient;
-
-    // Single constructor so Spring resolves the bean unambiguously; the base URL
-    // is already bound to the injected RestClient bean (see RestClientConfig).
     public PokeApiHttpGateway(RestClient pokeApiRestClient) {
         this.restClient = pokeApiRestClient;
     }
@@ -53,7 +57,6 @@ public class PokeApiHttpGateway {
         } catch (PokeApiUnavailableException e) {
             throw e;
         } catch (Exception e) {
-            // timeouts, connection resets, malformed JSON — everything degrades to 503
             log.warn("PokeAPI call failed for {}: {}", path, e.getMessage());
             throw new PokeApiUnavailableException("PokeAPI is unreachable: " + e.getMessage(), e);
         }

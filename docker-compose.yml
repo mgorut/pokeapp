@@ -1,10 +1,6 @@
-# ------------------------------------------------------------------
-# PokéManager - full-stack orchestration
-# Services: postgres (state) -> backend (Spring Boot API) -> frontend (Nginx SPA)
-# Startup order is enforced with healthcheck conditions so the backend
-# only starts once Postgres accepts connections, and Nginx only once the
-# API answers /actuator/health with UP.
-# ------------------------------------------------------------------
+# Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+# This source code is licensed under the Restricted Use License found in the
+# LICENSE.md file in the root directory of this source tree.
 
 services:
   postgres:
@@ -19,7 +15,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      # pg_isready must report accepting connections for the specific user/db.
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}" ]
       interval: 10s
       timeout: 5s
@@ -34,11 +29,9 @@ services:
       dockerfile: Dockerfile
     container_name: pokemanager-api
     environment:
-      # Spring relaxed binding: SPRING_DATASOURCE_* overrides application.properties defaults.
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      # ALWAYS override this secret in real deployments (>=32 chars enforced by app).
       JWT_SECRET: ${JWT_SECRET}
       POKEAPI_BASE_URL: ${POKEAPI_BASE_URL}
     ports:
@@ -46,7 +39,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    # Healthcheck defined in pokeapi/Dockerfile (actuator probe); compose honors it.
     networks:
       - pokemanager-net
     restart: unless-stopped

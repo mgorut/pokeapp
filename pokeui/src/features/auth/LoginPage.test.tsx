@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

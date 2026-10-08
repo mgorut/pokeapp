@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
@@ -66,9 +73,6 @@ public class LocalPokemonEntity {
      */
     @Column(name = "version", nullable = false)
     private long version;
-
-    // Public no-arg constructor: required by JPA; the persistence adapters
-    // (different package) instantiate entities for domain<->entity mapping.
     public LocalPokemonEntity() {
     }
 

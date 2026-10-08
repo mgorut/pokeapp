@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { Link } from 'react-router-dom';
 import type { EvolutionStage } from '../../lib/types';
 

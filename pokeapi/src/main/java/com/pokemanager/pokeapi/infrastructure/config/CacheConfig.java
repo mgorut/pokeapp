@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -27,7 +34,6 @@ public class CacheConfig {
         manager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(Duration.ofHours(24))
                 .maximumSize(200));
-        // pre-create the known cache so metrics/warmup behave predictably
         manager.setCacheNames(List.of(POKEMON_PAGE_CACHE));
         return manager;
     }

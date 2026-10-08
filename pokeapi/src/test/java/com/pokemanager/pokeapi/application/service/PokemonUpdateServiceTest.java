@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.application.service;
 
 import com.pokemanager.pokeapi.domain.exception.ConcurrentModificationException;
@@ -52,7 +59,6 @@ class PokemonUpdateServiceTest {
 
         assertThat(updated.getLocalizedName()).isEqualTo("Bulba");
         assertThat(updated.getGeographicMetadata()).isEqualTo("Kanto, Route 1");
-        // trimmed, lower-cased, de-duplicated
         assertThat(updated.getInternalClassificationTags()).containsExactly("grass", "poison");
         assertThat(updated.getVersion()).isEqualTo(1);
         verify(repository).save(updated);

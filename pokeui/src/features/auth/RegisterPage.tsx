@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,8 +11,6 @@ import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../context/useAuth';
 import { toApiError } from '../../lib/api';
 import { useForm } from 'react-hook-form';
-
-// Extend schema to include username validation (3-50 chars, non‑blank)
 const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
@@ -42,7 +44,6 @@ export function RegisterPage() {
       navigate('/');
     } catch (err) {
       const apiErr = toApiError(err);
-      // Surface field‑level errors from GlobalExceptionHandler when present
       setServerError(apiErr.fieldErrors?.email ?? apiErr.message);
     }
   };

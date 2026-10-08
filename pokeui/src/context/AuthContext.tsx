@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { apiLogin, apiRegister, getStoredToken, storeToken } from '../lib/api';
 import { AuthContext, type AuthState } from './authContextCore';

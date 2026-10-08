@@ -1,10 +1,7 @@
-/**
- * API types mirroring the Spring Boot DTOs (pokeapi presentation/web/ResponseDtos).
- * Keeping them hand-written (not generated) since the backend contract is small and stable.
- */
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
 
-// US01 – list item returned by GET /api/public/pokemon
-// Matches the backend PokemonSummaryDto field names
 export interface PokemonSummary {
   id: number;            // PokeAPI numeric id
   name: string;
@@ -21,9 +18,6 @@ export interface PageResult<T> {
   totalPages: number;
   content: T[];  // Backend uses "content" not "items"
 }
-
-// US02 – detail returned by GET /api/public/pokemon/{idOrName}
-// Matches backend PokemonDetailDto field names
 export interface Statistics {
   hp: number;
   attack: number;
@@ -50,8 +44,6 @@ export interface PokemonDetail {
   syncedLocally: boolean;
   localUuid: string | null;
 }
-
-// US03/US04 – local record
 export interface LocalPokemon {
   uuid: string;
   pokeapiId: number;
@@ -62,14 +54,10 @@ export interface LocalPokemon {
   internalClassificationTags: string[];
   version: number; // optimistic-locking token, must be echoed back on PUT
 }
-
-// Auth
 export interface AuthResponse {
   token: string;
   email: string;
 }
-
-// Uniform error envelope produced by GlobalExceptionHandler
 export interface ApiError {
   status: number;
   error: string;

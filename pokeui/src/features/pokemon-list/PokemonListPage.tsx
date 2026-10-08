@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -25,13 +29,9 @@ export function PokemonListPage() {
     queryFn: () => fetchPokemonList(page, PAGE_SIZE),
     placeholderData: (prev) => prev, // keep previous page visible while fetching → no flicker
   });
-
-  // Save current page to sessionStorage for reliable back navigation
   useEffect(() => {
     sessionStorage.setItem(LIST_PAGE_KEY, String(page));
   }, [page]);
-
-  // Redirect invalid page numbers to the last valid page
   useEffect(() => {
     if (data && page >= data.totalPages) {
       const lastValidPage = data.totalPages - 1;

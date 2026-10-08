@@ -1,11 +1,13 @@
-# 🎨 Frontend Requirements - React + TypeScript
+<!--
+  Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+  
+  This source code is licensed under the Restricted Use License found in the
+  LICENSE.md file in the root directory of this source tree.
+-->
 
-## Context
 Build a modern, responsive frontend that consumes the PokéManager API. Primary evaluation criteria: responsiveness, user-centric design, clean architecture, efficient state management.
 
 ---
-
-## 🛠️ Tech Stack (MANDATORY)
 - **Framework**: React 18+ with Vite
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS
@@ -16,15 +18,9 @@ Build a modern, responsive frontend that consumes the PokéManager API. Primary 
 - **Testing**: Jest + React Testing Library
 
 ---
-
-## 📱 Required Views
-
-### 1. Authentication Views
 - **Login Page**: Email + password form, link to register
 - **Register Page**: Username + email + password + confirm password
 - **Protected Route Wrapper**: Redirect to login if no JWT
-
-### 2. Public Pokemon Views
 - **Pokemon List (Paginated)**:
   - Grid layout with Pokemon cards
   - Each card shows: sprite, name, category, mass, skills (tags)
@@ -37,8 +33,6 @@ Build a modern, responsive frontend that consumes the PokéManager API. Primary 
   - Narrative description (flavor text)
   - Evolutionary lineage (horizontal timeline)
   - "Sync to Local" button (if authenticated and not synced)
-
-### 3. Protected Admin Views
 - **My Synced Pokemon**: List of locally synced Pokemon
 - **Edit Pokemon Form**:
   - Fields: `localizedName`, `geographicMetadata`, `internalClassificationTags` (multi-select/chips)
@@ -47,10 +41,6 @@ Build a modern, responsive frontend that consumes the PokéManager API. Primary 
   - Optimistic UI updates
 
 ---
-
-## 🏗️ Architectural Requirements
-
-### Component Organization
 ```text
 src/
 ├── components/          # Reusable UI components
@@ -71,14 +61,10 @@ src/
 ├── utils/               # Helper functions
 └── App.tsx
 ```
-
-### State Management Strategy
 - **Server State**: React Query (caching, refetching, mutations)
 - **Client State**: React Context (auth, theme)
 - **Form State**: React Hook Form
 - **URL State**: React Router params/searchParams
-
-### Performance Requirements
 - [ ] Lazy load routes with `React.lazy()`
 - [ ] Memoize expensive computations with `useMemo`/`useCallback`
 - [ ] Virtualize long lists (if >100 items)
@@ -86,16 +72,10 @@ src/
 - [ ] No console warnings in production build
 
 ---
-
-## 🎨 Design Requirements
-
-### Responsiveness
 - [ ] Mobile-first approach
 - [ ] Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
 - [ ] Touch-friendly buttons (min 44x44px)
 - [ ] Readable typography (min 14px body text)
-
-### User-Centric Design
 - [ ] Clear visual hierarchy
 - [ ] Consistent color palette (Pokemon-themed: red, white, blue accents)
 - [ ] Loading states for all async operations
@@ -104,16 +84,10 @@ src/
 - [ ] Accessible (WCAG 2.1 AA): proper ARIA labels, keyboard navigation, contrast ratios
 
 ---
-
-## 🧪 Testing Requirements
-
-### Component Tests
 - [ ] Render tests (does it show?)
 - [ ] Interaction tests (click, type, submit)
 - [ ] Async tests (loading, error, success states)
 - [ ] Accessibility tests (jest-axe)
-
-### Example Test
 ```typescript
 describe('PokemonCard', () => {
   it('renders sprite, name, and skills', () => {
@@ -130,8 +104,6 @@ describe('PokemonCard', () => {
 ```
 
 ---
-
-## 📦 Delivery Requirements
 - [ ] `README.md` with:
   - Setup instructions (`npm install`, `npm run dev`)
   - Environment variables (`.env.example`)
@@ -144,8 +116,6 @@ describe('PokemonCard', () => {
 - [ ] No ESLint errors (`npm run lint` passes)
 
 ---
-
-## Output Instructions
 Generate the implementation in this order:
 1. Project setup (Vite + TypeScript + Tailwind config)
 2. Shared components (UI library)

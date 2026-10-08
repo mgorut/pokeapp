@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.security;
 
 import io.jsonwebtoken.Claims;
@@ -32,7 +39,6 @@ public class JwtTokenService {
 
     public JwtTokenService(@Value("${security.jwt.secret}") String secret,
                            @Value("${security.jwt.ttl:PT8H}") Duration ttl) {
-        // HS256 requires >= 256 bits of key material; fail fast on weak secrets.
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < 32) {
             throw new IllegalStateException("security.jwt.secret must be at least 32 characters");

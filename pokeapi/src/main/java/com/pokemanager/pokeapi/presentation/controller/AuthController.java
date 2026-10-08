@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.presentation.controller;
 
 import com.pokemanager.pokeapi.application.service.AuthService;
@@ -64,8 +71,6 @@ public class AuthController {
     @Operation(summary = "Re-issue a JWT using the current valid JWT")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<AuthResponseDto> refresh(Authentication authentication) {
-        // /refresh is permitAll in SecurityConfig so an *invalid* token reaches us as anonymous;
-        // we then answer 401 ourselves (same contract Spring would enforce on protected routes).
         if (authentication == null || !authentication.isAuthenticated()
                 || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

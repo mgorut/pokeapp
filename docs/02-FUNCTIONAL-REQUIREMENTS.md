@@ -1,23 +1,19 @@
-# 📋 Functional Requirements - Pokemon User Stories
+<!--
+  Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+  
+  This source code is licensed under the Restricted Use License found in the
+  LICENSE.md file in the root directory of this source tree.
+-->
 
-## Context
 Refer to the Project Overview. Implement the following 4 User Stories with full Clean Architecture compliance and TDD approach.
 
 ---
-
-## 🎯 USER STORY 01: Pokemon Enumeration
-
-### Description
 As an **unauthenticated user**, I want to browse Pokemon via paginated results so I can explore the catalog.
-
-### Required Response Fields
 Each Pokemon entry MUST include:
 - `sprite` (URL to official artwork)
 - `category` (e.g., "Grass", "Fire", "Water" - primary type)
 - `mass` (weight in kg or lbs)
 - `skills` (collection of abilities/moves names)
-
-### Acceptance Criteria
 - [ ] Endpoint: `GET /api/public/pokemon`
 - [ ] Query params: `page` (default 0), `size` (default 10, max 50)
 - [ ] Response structure:
@@ -43,19 +39,11 @@ Each Pokemon entry MUST include:
 - [ ] Unit test: Verify pagination logic and cache hit/miss behavior.
 
 ---
-
-## 🎯 USER STORY 02: Detailed View
-
-### Description
 As an **unauthenticated user**, I want to access comprehensive data for a specific Pokemon.
-
-### Required Response Fields
 - `image` (high-res sprite)
 - `core statistics` (hp, attack, defense, spAtk, spDef, speed)
 - `narrative description` (flavor text from pokemon-species endpoint)
 - `evolutionary lineage` (full evolution chain with names and sprites)
-
-### Acceptance Criteria
 - [ ] Endpoint: `GET /api/public/pokemon/{idOrName}`
 - [ ] Response structure:
   ```json
@@ -83,18 +71,10 @@ As an **unauthenticated user**, I want to access comprehensive data for a specif
 - [ ] Unit test: Mock PokeAPI client, verify lineage resolution (requires 2 chained HTTP calls: species -> evolution-chain).
 
 ---
-
-## 🎯 USER STORY 03: Data Synchronization
-
-### Description
 As an **authenticated user**, I want to sync a Pokemon from PokeAPI to the local database so I can add proprietary fields.
-
-### Proprietary Fields (MUST be included)
 - `localizedName` (String) - e.g., regional name
 - `geographicMetadata` (String) - e.g., "Found in Kanto region, tropical forests"
 - `internalClassificationTags` (List<String>) - e.g., ["starter", "grass-type", "popular"]
-
-### Acceptance Criteria
 - [ ] Endpoint: `POST /api/protected/pokemon/{idOrName}/sync` (requires JWT)
 - [ ] Behavior:
   1. Fetch full data from PokeAPI
@@ -116,13 +96,7 @@ As an **authenticated user**, I want to sync a Pokemon from PokeAPI to the local
 - [ ] Unit test: Verify PokeAPI call, entity mapping, and duplicate prevention.
 
 ---
-
-## 🎯 USER STORY 04: Local Data Modification
-
-### Description
 As an **authenticated user**, I want to update proprietary fields of a synced Pokemon.
-
-### Acceptance Criteria
 - [ ] Endpoint: `PUT /api/protected/pokemon/{id}` (requires JWT, `id` is local UUID)
 - [ ] Request payload:
   ```json
@@ -145,8 +119,6 @@ As an **authenticated user**, I want to update proprietary fields of a synced Po
 - [ ] Unit test: Cover all validation scenarios and status codes.
 
 ---
-
-## Output Instructions
 Generate the implementation in this order:
 1. **Domain layer**: Entities, Repository interfaces, Domain exceptions
 2. **Application layer**: Use case services (one per User Story)

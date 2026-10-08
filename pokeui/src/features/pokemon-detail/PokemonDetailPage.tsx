@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchPokemonDetail, syncPokemon, toApiError } from '../../lib/api';
@@ -31,8 +35,6 @@ export function PokemonDetailPage() {
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  // Only run the query if we have a valid idOrName (prevents 404 on invalid routes)
   const { data, isPending, error } = useQuery({
     queryKey: queryKeys.pokemonDetail(idOrName ?? ''),
     queryFn: () => fetchPokemonDetail(idOrName!),
@@ -43,14 +45,12 @@ export function PokemonDetailPage() {
     mutationFn: () => syncPokemon((data as PokemonDetail).id),
     onSuccess: (local) => {
       toast.push('success', `${local.name} synced to your local Pokédex.`);
-      // Invalidate so the list shows the "Synced locally" badge & detail flips state.
       queryClient.invalidateQueries({ queryKey: ['pokemon'] });
       queryClient.setQueryData(queryKeys.localPokemon(local.uuid), local);
       navigate(`/pokemon/${local.uuid}/edit`, { state: { justSynced: true }, replace: true });
     },
     onError: (err) => {
       const apiErr = toApiError(err);
-      // 409 = already synced → friendly redirect instead of an error toast
       if (apiErr.status === 409) {
         toast.push('info', 'Already in your local Pokédex – opening it.');
         navigate('/');

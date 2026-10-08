@@ -1,12 +1,12 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { defineConfig, mergeConfig } from 'vite';
 import type { PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
-
-// Vite config: React + Tailwind v4 plugin (no postcss config needed).
-// Dev proxy forwards /api to the Spring Boot backend so the browser never
-// deals with CORS during local development. Vitest block powers component tests.
 const viteConfig = defineConfig({
   plugins: [react(), tailwindcss() as PluginOption],
   envPrefix: ['VITE_'],

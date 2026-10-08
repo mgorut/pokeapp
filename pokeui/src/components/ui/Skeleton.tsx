@@ -1,4 +1,7 @@
-/** Loading skeleton blocks – avoids layout shift while queries are pending. */
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`animate-pulse rounded-lg bg-slate-200 ${className}`} aria-hidden />;
 }

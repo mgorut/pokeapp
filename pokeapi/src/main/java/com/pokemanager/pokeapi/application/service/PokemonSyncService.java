@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.application.service;
 
 import com.pokemanager.pokeapi.domain.exception.AlreadySyncedException;
@@ -49,7 +56,6 @@ public class PokemonSyncService {
             LocalPokemon created = LocalPokemon.newlySynced(detail.id(), detail.name()); // step 3
             return localPokemonRepository.save(created);
         } catch (DataIntegrityViolationException race) {
-            // Unique-constraint violation => concurrent duplicate sync. Same user-facing outcome.
             log.warn("Duplicate sync race detected for pokeapi id {}", detail.id());
             throw new AlreadySyncedException(detail.name());
         }

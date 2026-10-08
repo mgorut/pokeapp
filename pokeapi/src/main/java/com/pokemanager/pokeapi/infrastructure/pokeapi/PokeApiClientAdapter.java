@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.infrastructure.pokeapi;
 
 import com.pokemanager.pokeapi.domain.model.EvolutionStage;
@@ -55,7 +62,6 @@ public class PokeApiClientAdapter implements PokeApiClient {
             if (id == null) {
                 continue;
             }
-            // Fan-out: the summary fields (sprite/category/mass/skills) require the detail doc.
             PokeApiDto.PokemonFullResponse full =
                     http.getRequired("/pokemon/" + id, PokeApiDto.PokemonFullResponse.class);
             summaries.add(toSummary(full));
@@ -67,8 +73,6 @@ public class PokeApiClientAdapter implements PokeApiClient {
     public PokemonDetail fetchDetail(String idOrName) {
         PokeApiDto.PokemonFullResponse pokemon =
                 http.getRequired("/pokemon/" + idOrName, PokeApiDto.PokemonFullResponse.class);
-
-        // Chained call 1: species -> flavor text + evolution chain URL
         PokeApiDto.SpeciesResponse species = http.getOptional(
                         "/pokemon-species/" + pokemon.id(), PokeApiDto.SpeciesResponse.class)
                 .orElse(null);
@@ -86,8 +90,6 @@ public class PokeApiClientAdapter implements PokeApiClient {
                 false, // syncedLocally is applied by the application service
                 null); // localUuid is applied by the application service
     }
-
-    // ---- mapping helpers (package-visible for unit tests) ----
 
     PokemonSummary toSummary(PokeApiDto.PokemonFullResponse p) {
         return new PokemonSummary(
@@ -173,8 +175,6 @@ public class PokeApiClientAdapter implements PokeApiClient {
                 || species.evolutionChain().url() == null) {
             return List.of();
         }
-        // species payload carries an ABSOLUTE url; the gateway expects a path relative
-        // to the configured base, so we normalize by stripping everything up to /api/v2.
         String chainPath = toRelativePath(species.evolutionChain().url());
         PokeApiDto.EvolutionChainResponse chain =
                 http.getOptional(chainPath, PokeApiDto.EvolutionChainResponse.class).orElse(null);

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.presentation.controller;
 
 import com.pokemanager.pokeapi.application.service.PokemonSyncService;
@@ -46,7 +53,6 @@ public class ProtectedPokemonController {
     @Operation(summary = "Copy a Pokemon from PokeAPI into the local database")
     public ResponseEntity<LocalPokemonDto> sync(@PathVariable String idOrName) {
         var created = syncService.sync(idOrName);
-        // Location header points at the edit resource (US04 target id).
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/api/protected/pokemon/" + created.getId())

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -12,9 +16,6 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/useToast';
-
-// One concrete form type (schema fields + optimistic-locking token) keeps the
-// ZodResolver and useForm generics in sync – avoids RHF's TFieldValues widening.
 const editWithVersionSchema = editSchema.extend({ version: z.number() });
 type EditFormV = z.infer<typeof editSchema> & { version: number };
 
@@ -47,8 +48,6 @@ export function PokemonEditPage() {
     watch,
     formState: { errors },
   } = useForm<EditFormV>({ resolver: zodResolver(editWithVersionSchema) });
-
-  // Populate the form once the record arrives.
   useEffect(() => {
     if (local) {
       reset({

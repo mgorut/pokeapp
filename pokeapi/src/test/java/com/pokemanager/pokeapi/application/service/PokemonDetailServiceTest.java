@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.application.service;
 
 import com.pokemanager.pokeapi.domain.exception.PokemonNotFoundException;
@@ -40,8 +47,8 @@ class PokemonDetailServiceTest {
         return new PokemonDetail(1, "bulbasaur", "sprite.png",
                 new Statistics(45, 49, 49, 65, 65, 45),
                 "An unusual grass-pokémon.",
-                List.of(new EvolutionStage(1, "bulbasaur", "s1.png"),
-                        new EvolutionStage(2, "ivysaur", "s2.png")),
+                List.of(new EvolutionStage(1, 1, "bulbasaur", "s1.png"),
+                        new EvolutionStage(2, 2, "ivysaur", "s2.png")),
                 synced, null);
     }
 

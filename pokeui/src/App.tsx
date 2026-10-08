@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -9,9 +13,6 @@ import { RegisterPage } from './features/auth/RegisterPage';
 import { PokemonListPage } from './features/pokemon-list/PokemonListPage';
 import { PokemonDetailPage } from './features/pokemon-detail/PokemonDetailPage';
 import { PokemonEditPage } from './features/pokemon-edit/PokemonEditPage';
-
-// One shared QueryClient: sensible defaults for a CRUD app (retry twice on
-// transient network/5xx errors, refetch when the tab regains focus).
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 2, staleTime: 60_000, refetchOnWindowFocus: true },

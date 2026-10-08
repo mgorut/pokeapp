@@ -1,8 +1,11 @@
+// Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+// This source code is licensed under the Restricted Use License found in the
+// LICENSE.md file in the root directory of this source tree.
+
 import type { Statistics } from '../../lib/types';
 
 /** Horizontal bars for base stats; values are normalised against a sane max of 255. */
 export function StatBars({ statistics }: { statistics: Statistics }) {
-  // Convert the statistics object into an array of name/value pairs for rendering.
   const statsArray = Object.entries(statistics).map(([key, value]) => ({ name: key, value: value as number }));
   if (!statsArray.length) return <p className="text-sm text-slate-500">No statistics available.</p>;
   return (

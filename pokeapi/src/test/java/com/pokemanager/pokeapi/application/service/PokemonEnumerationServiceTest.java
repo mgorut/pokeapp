@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+ *
+ * This source code is licensed under the Restricted Use License found in the
+ * LICENSE.md file in the root directory of this source tree.
+ */
+
 package com.pokemanager.pokeapi.application.service;
 
 import com.pokemanager.pokeapi.domain.model.PageResult;
@@ -65,7 +72,6 @@ class PokemonEnumerationServiceTest {
         @Override
         @Bean
         public org.springframework.cache.interceptor.KeyGenerator keyGenerator() {
-            // mirror the @Cacheable key expression "#page + '-' + #size"
             return (target, method, params) -> params[0] + "-" + params[1];
         }
     }
@@ -73,13 +79,6 @@ class PokemonEnumerationServiceTest {
     @BeforeEach
     void setUp() {
         target = new PokemonEnumerationService(pokeApiClient);
-
-        // Build a CGLIB subclass proxy that runs the REAL Spring CacheInterceptor
-        // around the service — identical semantics to the annotation-driven proxy
-        // at runtime. CGLIB (proxyTargetClass) is required because the concrete
-        // class's generic return type PageResult<PokemonSummary> must survive the
-        // proxy so Spring can deserialize cached entries correctly; a JDK proxy
-        // behind a hand-written interface loses that generic signature.
         var ctx = new AnnotationConfigApplicationContext(TestCacheConfig.class);
         CacheInterceptor interceptor = ctx.getBean(CacheInterceptor.class);
         ProxyFactory factory = new ProxyFactory(target);

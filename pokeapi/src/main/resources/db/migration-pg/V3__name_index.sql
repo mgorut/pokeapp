@@ -1,3 +1,7 @@
+-- Copyright (c) 2026 Manuel Gorut. All Rights Reserved.
+-- This source code is licensed under the Restricted Use License found in the
+-- LICENSE.md file in the root directory of this source tree.
+
 -- Performance optimization for case-insensitive name lookups. This is an
 -- EXPRESSION index which only PostgreSQL supports; H2 (used by the test
 -- profile) cannot parse it, so it lives in its own migration that the test
