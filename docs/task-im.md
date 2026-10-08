@@ -1,4 +1,4 @@
-## **VERSION 2: Interactive Mode (With Questions)**
+## **Interactive Mode (With Questions)**
 
 # 🎯 PokéManager API - Interactive Implementation Prompt
 
