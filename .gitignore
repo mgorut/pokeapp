@@ -1,8 +1,5 @@
-# Dependencies
-node_modules/
+# Maven build artifacts
+target/
 
-# Build artifacts
-dist/
-
-# Logs
-*.log
+# Environment files
+.env
