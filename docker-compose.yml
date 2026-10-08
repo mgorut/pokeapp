@@ -35,7 +35,7 @@ services:
     container_name: pokemanager-api
     environment:
       # Spring relaxed binding: SPRING_DATASOURCE_* overrides application.properties defaults.
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-pokemanager}
+      SPRING_DATASOURCE_URL: ${DB_URL:-jdbc:postgresql://localhost:5432/pokemanager}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-pokemanager}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-pokemanager}
       # ALWAYS override this secret in real deployments (>=32 chars enforced by app).
