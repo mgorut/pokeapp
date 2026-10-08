@@ -49,7 +49,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ```yaml
 # Example structure
-version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
@@ -94,7 +93,7 @@ volumes:
 
 ### Pre-populated Data
 - [ ] **Users**: At least 1 demo user
-  - Username: `demo@bla.com`
+  - Username: `mgorut@localhost`
   - Password: `Demo123!` (BCrypt hashed)
   - Role: `USER`
 - [ ] **Pokemon**: At least 3 pre-synced Pokemon with proprietary fields filled
