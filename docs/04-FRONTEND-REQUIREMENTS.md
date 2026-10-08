@@ -138,7 +138,7 @@ describe('PokemonCard', () => {
   - Build for production (`npm run build`)
   - Run tests (`npm test`)
 - [ ] Pre-populate with mock credentials for demo:
-  - Username: `demo@bla.com`
+  - Username: `demo@pokeapi.co`
   - Password: `Demo123!`
 - [ ] No TypeScript errors (`npm run type-check` passes)
 - [ ] No ESLint errors (`npm run lint` passes)

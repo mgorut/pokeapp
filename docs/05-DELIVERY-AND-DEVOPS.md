@@ -1,5 +1,3 @@
-## 📄 File 5: `05-DELIVERY-AND-DEVOPS.md`
-
 # 🚀 Delivery & DevOps Requirements
 
 ## Context
@@ -53,13 +51,13 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: pokemanager
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,8 +67,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pokemanager
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     depends_on:
       postgres:
@@ -93,7 +91,7 @@ volumes:
 
 ### Pre-populated Data
 - [ ] **Users**: At least 1 demo user
-  - Username: `mgorut@localhost`
+  - Username: `demo@pokeapi.co`
   - Password: `Demo123!` (BCrypt hashed)
   - Role: `USER`
 - [ ] **Pokemon**: At least 3 pre-synced Pokemon with proprietary fields filled
@@ -152,7 +150,7 @@ npm run dev
 \`\`\`
 
 ## 🔐 Demo Credentials
-- Email: `demo@bla.com`
+- Email: `demo@pokeapi.co`
 - Password: `Demo123!`
 
 ## 📡 API Documentation

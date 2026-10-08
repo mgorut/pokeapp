@@ -120,7 +120,7 @@ npm run dev                  # http://localhost:5173, proxies /api to :8080
 
 Seeded by Flyway migration `V2__seed.sql` (BCrypt-hashed password):
 
-- **Email:** `demo@bla.com`
+- **Email:** `demo@pokeapi.co`
 - **Password:** `Demo123!`
 
 The seed also pre-syncs **Bulbasaur**, **Charmander** and **Squirtle** with proprietary fields filled in, so you can try US04 editing immediately after logging in. You can also register new users via `POST /api/auth/register`.

@@ -1,11 +1,11 @@
 -- V2: Seed data required by the delivery spec (05-DELIVERY-AND-DEVOPS.md)
---  * one demo account: mgorut@localhost / Demo123!  (BCrypt cost 12 hash below)
+--  * one demo account: demo@pokeapi.co / Demo123!  (BCrypt cost 12 hash below)
 --  * three pre-synced Pokemon so the protected edit flow works out of the box.
 
 INSERT INTO users (id, username, email, password_hash, role, created_at)
 VALUES ('00000000-0000-0000-0000-000000000001',
-        'mgorut',
-        'mgorut@localhost',
+        'demo',
+        'demo@pokeapi.co',
         '$2b$12$rVByh3ZAkR32RAbWWLbAq.WCYOgyhZ9xelXbxxIKmKjkJhuRyW2gW',
         'USER',
         TIMESTAMP '2024-01-01 00:00:00');

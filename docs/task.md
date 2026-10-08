@@ -80,7 +80,7 @@ All requirements are defined in:
    - Create Flyway migrations or `schema.sql`
    - Define tables: `users`, `pokemon_local`
    - Create `data.sql` with seed data:
-     - 1 demo user (demo@bla.com / Demo123!)
+     - 1 demo user (demo@pokeapi.co / Demo123!)
      - 3 pre-synced Pokemon (Bulbasaur, Charmander, Squirtle)
 
 8. **Testing**
