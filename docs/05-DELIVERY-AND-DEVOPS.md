@@ -47,7 +47,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ```yaml
 # Example structure
-version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
