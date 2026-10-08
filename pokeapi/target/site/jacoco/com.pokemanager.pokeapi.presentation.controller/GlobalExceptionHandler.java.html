@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.presentation.controller</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.presentation.controller;
+
+import com.pokemanager.pokeapi.domain.exception.AlreadySyncedException;
+import com.pokemanager.pokeapi.domain.exception.ConcurrentModificationException;
+import com.pokemanager.pokeapi.domain.exception.InvalidPayloadException;
+import com.pokemanager.pokeapi.domain.exception.PokeApiUnavailableException;
+import com.pokemanager.pokeapi.domain.exception.PokemonNotFoundException;
+import com.pokemanager.pokeapi.presentation.dto.ResponseDtos.ErrorDto;
+import com.pokemanager.pokeapi.presentation.dto.ResponseDtos.FieldErrorDto;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.List;
+
+/**
+ * Centralized domain-exception -&gt; HTTP mapping (springboot-patterns):
+ * - PokemonNotFoundException      -&gt; 404
+ * - InvalidPayloadException       -&gt; 400 (with field-level error list)
+ * - AlreadySyncedException        -&gt; 409
+ * - ConcurrentModificationException -&gt; 409
+ * - PokeApiUnavailableException   -&gt; 503
+ * Bean-validation failures produce the same ErrorDto shape so clients can parse
+ * every error uniformly. Unknown exceptions log the stack trace but return a
+ * sanitized 500 (no internal details leak).
+ */
+@RestControllerAdvice
+<span class="fc" id="L37">public class GlobalExceptionHandler {</span>
+
+<span class="fc" id="L39">    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
+
+    @ExceptionHandler(PokemonNotFoundException.class)
+    public ResponseEntity&lt;ErrorDto&gt; notFound(PokemonNotFoundException e) {
+<span class="fc" id="L43">        return build(HttpStatus.NOT_FOUND, e.getMessage());</span>
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity&lt;ErrorDto&gt; userGone(UsernameNotFoundException e) {
+<span class="nc" id="L48">        return build(HttpStatus.UNAUTHORIZED, &quot;Authentication no longer valid&quot;);</span>
+    }
+
+    @ExceptionHandler({AlreadySyncedException.class, ConcurrentModificationException.class})
+    public ResponseEntity&lt;ErrorDto&gt; conflict(RuntimeException e) {
+<span class="fc" id="L53">        return build(HttpStatus.CONFLICT, e.getMessage());</span>
+    }
+
+    @ExceptionHandler(PokeApiUnavailableException.class)
+    public ResponseEntity&lt;ErrorDto&gt; upstreamDown(PokeApiUnavailableException e) {
+<span class="nc" id="L58">        return build(HttpStatus.SERVICE_UNAVAILABLE,</span>
+                &quot;Upstream PokeAPI is currently unavailable, please retry later&quot;);
+    }
+
+    @ExceptionHandler(InvalidPayloadException.class)
+    public ResponseEntity&lt;ErrorDto&gt; invalidDomainPayload(InvalidPayloadException e) {
+<span class="fc" id="L64">        ErrorDto body = ErrorDto.withFields(HttpStatus.BAD_REQUEST.value(),</span>
+<span class="fc" id="L65">                HttpStatus.BAD_REQUEST.getReasonPhrase(), e.getMessage(),</span>
+<span class="fc" id="L66">                List.of(new FieldErrorDto(e.getField(), e.getMessage())));</span>
+<span class="fc" id="L67">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);</span>
+    }
+
+    /** @Valid body failures -&gt; 400 with per-field messages (US04 acceptance criteria). */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;ErrorDto&gt; validation(MethodArgumentNotValidException e) {
+<span class="fc" id="L73">        List&lt;FieldErrorDto&gt; fields = e.getBindingResult().getFieldErrors().stream()</span>
+<span class="fc" id="L74">                .map(f -&gt; new FieldErrorDto(f.getField(), f.getDefaultMessage()))</span>
+<span class="fc" id="L75">                .toList();</span>
+<span class="fc" id="L76">        ErrorDto body = ErrorDto.withFields(HttpStatus.BAD_REQUEST.value(),</span>
+<span class="fc" id="L77">                HttpStatus.BAD_REQUEST.getReasonPhrase(), &quot;Validation failed&quot;, fields);</span>
+<span class="fc" id="L78">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);</span>
+    }
+
+    /** @Validated method-parameter failures (e.g. page/size bounds) -&gt; 400. */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity&lt;ErrorDto&gt; constraint(ConstraintViolationException e) {
+<span class="fc" id="L84">        List&lt;FieldErrorDto&gt; fields = e.getConstraintViolations().stream()</span>
+<span class="fc" id="L85">                .map(v -&gt; new FieldErrorDto(leafPath(v.getPropertyPath()), v.getMessage()))</span>
+<span class="fc" id="L86">                .toList();</span>
+<span class="fc" id="L87">        ErrorDto body = ErrorDto.withFields(HttpStatus.BAD_REQUEST.value(),</span>
+<span class="fc" id="L88">                HttpStatus.BAD_REQUEST.getReasonPhrase(), &quot;Validation failed&quot;, fields);</span>
+<span class="fc" id="L89">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);</span>
+    }
+
+    /** Malformed JSON or wrong types in path/body -&gt; 400 rather than 500. */
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity&lt;ErrorDto&gt; unreadable(Exception e) {
+<span class="nc" id="L95">        return build(HttpStatus.BAD_REQUEST, &quot;Malformed request payload&quot;);</span>
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;ErrorDto&gt; unexpected(Exception e) {
+<span class="nc" id="L100">        log.error(&quot;Unhandled exception&quot;, e);</span>
+<span class="nc" id="L101">        return build(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Unexpected server error&quot;);</span>
+    }
+
+    private String leafPath(Object propertyPath) {
+<span class="fc" id="L105">        String full = propertyPath.toString();</span>
+<span class="fc" id="L106">        int dot = full.lastIndexOf('.');</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        return dot &gt;= 0 ? full.substring(dot + 1) : full;</span>
+    }
+
+    private ResponseEntity&lt;ErrorDto&gt; build(HttpStatus status, String message) {
+<span class="fc" id="L111">        return ResponseEntity.status(status)</span>
+<span class="fc" id="L112">                .body(ErrorDto.of(status.value(), status.getReasonPhrase(), message));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

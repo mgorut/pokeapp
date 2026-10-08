@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PageResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.domain.model</a> &gt; <span class="el_source">PageResult.java</span></div><h1>PageResult.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.domain.model;
+
+import java.util.List;
+import java.util.function.Function;
+
+/**
+ * Framework-agnostic pagination container.
+ * The domain layer must not depend on Spring Data's {@code Pageable}/Page types,
+ * so we model pagination ourselves and adapt at the infrastructure boundary.
+ */
+public record PageResult&lt;T&gt;(List&lt;T&gt; content, int page, int size, long totalElements) {
+
+<span class="fc" id="L13">    public PageResult {</span>
+<span class="fc" id="L14">        content = List.copyOf(content); // defensive immutability</span>
+<span class="fc" id="L15">    }</span>
+
+    /** Total number of pages given the current page size. */
+    public int totalPages() {
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        return size &lt;= 0 ? 0 : (int) Math.ceil((double) totalElements / size);</span>
+    }
+
+    /** Map the payload to another type (used to go domain -&gt; DTO without leaking Spring). */
+    public &lt;R&gt; PageResult&lt;R&gt; map(Function&lt;T, R&gt; mapper) {
+<span class="nc" id="L24">        return new PageResult&lt;&gt;(content.stream().map(mapper).toList(), page, size, totalElements);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

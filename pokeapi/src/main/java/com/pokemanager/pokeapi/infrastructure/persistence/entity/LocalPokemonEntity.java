@@ -43,7 +43,14 @@ public class LocalPokemonEntity {
      * H2 (tests) and jsonb under Postgres (owned by the Flyway migration).
      * Hibernate binds it as a plain string, which Postgres accepts for jsonb
      * columns because varchar->jsonb is an implicit binary-coercible cast.
+     *
+     * NOTE ON READS: when Hibernate re-reads a jsonb column within the same
+     * session that already persisted it, Postgres returns the binary jsonb
+     * payload rendered as a quoted JSON *string* (e.g. "[\"a\",\"b\"]") rather
+     * than the raw array text. readTags() in the adapter defensively unwraps
+     * that double-encoding so tag lists survive an entity re-load.
      */
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
     @Column(name = "internal_classification_tags", length = 4000)
     private String internalClassificationTags;
 

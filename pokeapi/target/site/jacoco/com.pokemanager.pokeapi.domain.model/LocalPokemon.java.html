@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalPokemon.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PokéManager API</a> &gt; <a href="index.source.html" class="el_package">com.pokemanager.pokeapi.domain.model</a> &gt; <span class="el_source">LocalPokemon.java</span></div><h1>LocalPokemon.java</h1><pre class="source lang-java linenums">package com.pokemanager.pokeapi.domain.model;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Locally-owned replica of a PokeAPI Pokemon plus the three proprietary fields
+ * that only exist in our database (localizedName, geographicMetadata, tags).
+ *
+ * Optimistic locking: {@code version} is checked on update so two concurrent
+ * edits cannot silently overwrite each other (US04 defensive requirement).
+ */
+public class LocalPokemon {
+
+    private final UUID id;
+    private final int pokeApiId;
+    private final String name;
+    private String localizedName;
+    private String geographicMetadata;
+    private List&lt;String&gt; internalClassificationTags;
+    private final Instant syncedAt;
+    private long version;
+
+    public LocalPokemon(UUID id, int pokeApiId, String name, String localizedName,
+                        String geographicMetadata, List&lt;String&gt; internalClassificationTags,
+<span class="fc" id="L27">                        Instant syncedAt, long version) {</span>
+<span class="fc" id="L28">        this.id = id;</span>
+<span class="fc" id="L29">        this.pokeApiId = pokeApiId;</span>
+<span class="fc" id="L30">        this.name = name;</span>
+<span class="fc" id="L31">        this.localizedName = localizedName;</span>
+<span class="fc" id="L32">        this.geographicMetadata = geographicMetadata;</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        this.internalClassificationTags = internalClassificationTags == null</span>
+<span class="pc" id="L34">                ? List.of() : List.copyOf(internalClassificationTags);</span>
+<span class="fc" id="L35">        this.syncedAt = syncedAt;</span>
+<span class="fc" id="L36">        this.version = version;</span>
+<span class="fc" id="L37">    }</span>
+
+    /** Factory used by the sync use case: proprietary fields initialized to defaults. */
+    public static LocalPokemon newlySynced(int pokeApiId, String name) {
+<span class="fc" id="L41">        return new LocalPokemon(UUID.randomUUID(), pokeApiId, name,</span>
+                null,                              // localized name unknown until user edits it
+                &quot;No recorded sightings yet&quot;,       // documented default geographic metadata
+<span class="fc" id="L44">                List.of(&quot;synced&quot;),                 // documented default classification tag</span>
+<span class="fc" id="L45">                Instant.now(), 0L);</span>
+    }
+
+    /**
+     * US04 business rule: apply a modification only if no concurrent update happened.
+     *
+     * @throws com.pokemanager.pokeapi.domain.exception.ConcurrentModificationException
+     *          when the caller's expected version is stale
+     */
+    public void applyUpdate(String localizedName, String geographicMetadata,
+                            List&lt;String&gt; internalClassificationTags, long expectedVersion) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (expectedVersion != this.version) {</span>
+<span class="fc" id="L57">            throw new com.pokemanager.pokeapi.domain.exception.ConcurrentModificationException(</span>
+                    &quot;Local pokemon was modified concurrently (expected version &quot;
+                            + expectedVersion + &quot;, actual &quot; + this.version + &quot;)&quot;);
+        }
+<span class="fc" id="L61">        this.localizedName = localizedName;</span>
+<span class="fc" id="L62">        this.geographicMetadata = geographicMetadata;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        this.internalClassificationTags = internalClassificationTags == null</span>
+<span class="pc" id="L64">                ? List.of() : List.copyOf(internalClassificationTags);</span>
+<span class="fc" id="L65">        this.version++;</span>
+<span class="fc" id="L66">    }</span>
+
+<span class="fc" id="L68">    public UUID getId()               { return id; }</span>
+<span class="fc" id="L69">    public int getPokeApiId()         { return pokeApiId; }</span>
+<span class="fc" id="L70">    public String getName()           { return name; }</span>
+<span class="fc" id="L71">    public String getLocalizedName()  { return localizedName; }</span>
+<span class="fc" id="L72">    public String getGeographicMetadata() { return geographicMetadata; }</span>
+<span class="fc" id="L73">    public List&lt;String&gt; getInternalClassificationTags() { return internalClassificationTags; }</span>
+<span class="fc" id="L74">    public Instant getSyncedAt()      { return syncedAt; }</span>
+<span class="fc" id="L75">    public long getVersion()          { return version; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

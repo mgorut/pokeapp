@@ -1,0 +1,7 @@
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/application/service/AuthServiceTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/application/service/PokemonDetailServiceTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/application/service/PokemonEnumerationServiceTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/application/service/PokemonSyncServiceTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/application/service/PokemonUpdateServiceTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/presentation/AuthAndSecurityIntegrationTest.java
+/workspace/pokeapi/src/test/java/com/pokemanager/pokeapi/presentation/PokemonApiIntegrationTest.java
