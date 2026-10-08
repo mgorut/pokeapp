@@ -76,7 +76,7 @@ export function PokemonEditPage() {
       queryClient.setQueryData(queryKeys.localPokemon(uuid), updated);
       queryClient.invalidateQueries({ queryKey: ['pokemon'] });
       toast.push('success', 'Changes saved.');
-      navigate(`/pokemon/${updated.pokeapiId}`);
+      navigate(`/pokemon/${updated.pokeapiId}`, { replace: true });
     },
     onError: (err) => {
       const apiErr = toApiError(err);
@@ -173,7 +173,11 @@ export function PokemonEditPage() {
 
           <div className="flex gap-3">
             <Button type="submit" loading={mutation.isPending}>Save changes</Button>
-            <Button type="button" variant="secondary" onClick={() => navigate(-1)}>Cancel</Button>
+            <Button type="button" variant="secondary" onClick={() => {
+              const savedPage = sessionStorage.getItem('pokeapp:lastListPage');
+              const page = savedPage ? Number(savedPage) : 0;
+              navigate(`/?page=${page}`);
+            }}>Cancel</Button>
           </div>
         </form>
       </Card>

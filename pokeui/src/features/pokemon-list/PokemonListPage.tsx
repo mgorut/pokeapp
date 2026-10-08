@@ -7,11 +7,14 @@ import { CardSkeleton } from '../../components/ui/Skeleton';
 import { Button } from '../../components/ui/Button';
 import { PokemonCard } from './PokemonCard';
 
+const LIST_PAGE_KEY = 'pokeapp:lastListPage';
+
 /**
  * US01 – paginated grid of Pokémon summaries.
  * Page is stored in URL query param (?page=N) so it survives navigation
  * and works with browser back/forward buttons.
  * If user enters an invalid page number (e.g., via direct URL), redirect to last valid page.
+ * Current page is also saved to sessionStorage for reliable "Back to Pokédex" navigation.
  */
 export function PokemonListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,6 +25,11 @@ export function PokemonListPage() {
     queryFn: () => fetchPokemonList(page, PAGE_SIZE),
     placeholderData: (prev) => prev, // keep previous page visible while fetching → no flicker
   });
+
+  // Save current page to sessionStorage for reliable back navigation
+  useEffect(() => {
+    sessionStorage.setItem(LIST_PAGE_KEY, String(page));
+  }, [page]);
 
   // Redirect invalid page numbers to the last valid page
   useEffect(() => {

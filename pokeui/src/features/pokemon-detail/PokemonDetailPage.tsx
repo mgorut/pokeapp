@@ -13,7 +13,12 @@ import { StatBars } from './StatBars';
 
 function BackLink() {
   const navigate = useNavigate();
-  return <button onClick={() => navigate(-1)} className="text-sm font-semibold text-poke-red hover:underline">← Back to Pokédex</button>;
+  const handleClick = () => {
+    const savedPage = sessionStorage.getItem('pokeapp:lastListPage');
+    const page = savedPage ? Number(savedPage) : 0;
+    navigate(`/?page=${page}`);
+  };
+  return <button onClick={handleClick} className="text-sm font-semibold text-poke-red hover:underline">← Back to Pokédex</button>;
 }
 
 /**
@@ -41,7 +46,7 @@ export function PokemonDetailPage() {
       // Invalidate so the list shows the "Synced locally" badge & detail flips state.
       queryClient.invalidateQueries({ queryKey: ['pokemon'] });
       queryClient.setQueryData(queryKeys.localPokemon(local.uuid), local);
-      navigate(`/pokemon/${local.uuid}/edit`, { state: { justSynced: true } });
+      navigate(`/pokemon/${local.uuid}/edit`, { state: { justSynced: true }, replace: true });
     },
     onError: (err) => {
       const apiErr = toApiError(err);
