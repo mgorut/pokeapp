@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPokemonList, toApiError } from '../../lib/api';
 import { PAGE_SIZE, queryKeys } from '../../lib/queryKeys';
@@ -10,6 +11,7 @@ import { PokemonCard } from './PokemonCard';
  * US01 – paginated grid of Pokémon summaries.
  * Page is stored in URL query param (?page=N) so it survives navigation
  * and works with browser back/forward buttons.
+ * If user enters an invalid page number (e.g., via direct URL), redirect to last valid page.
  */
 export function PokemonListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +22,14 @@ export function PokemonListPage() {
     queryFn: () => fetchPokemonList(page, PAGE_SIZE),
     placeholderData: (prev) => prev, // keep previous page visible while fetching → no flicker
   });
+
+  // Redirect invalid page numbers to the last valid page
+  useEffect(() => {
+    if (data && page >= data.totalPages) {
+      const lastValidPage = data.totalPages - 1;
+      setSearchParams({ page: String(lastValidPage) }, { replace: true });
+    }
+  }, [data, page, setSearchParams]);
 
   const goToPage = (newPage: number) => {
     if (newPage < 0) return;
