@@ -1,1 +1,3 @@
-(empty)
+# build
+pokeapi/target/
+pokeui/node_modules/
