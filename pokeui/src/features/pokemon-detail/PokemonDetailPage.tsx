@@ -11,6 +11,11 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { EvolutionTimeline } from './EvolutionTimeline';
 import { StatBars } from './StatBars';
 
+function BackLink() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate(-1)} className="text-sm font-semibold text-poke-red hover:underline">← Back to Pokédex</button>;
+}
+
 /**
  * US02 – detail view: hero sprite, narrative description, stats visualisation,
  * evolution lineage and the "Sync to Local" action (US03) for authenticated users.
@@ -67,7 +72,7 @@ export function PokemonDetailPage() {
         <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-rose-700">
           <h2 className="font-bold">{apiErr.status === 404 ? 'Pokémon not found' : 'Failed to load detail'}</h2>
           <p className="mt-1 text-sm">{apiErr.message}</p>
-          <Link to="/" className="mt-3 inline-block text-sm font-semibold underline">← Back to Pokédex</Link>
+          <BackLink />
         </div>
       </main>
     );
@@ -121,7 +126,7 @@ export function PokemonDetailPage() {
       </div>
 
       <div className="mt-8">
-        <Link to="/" className="text-sm font-semibold text-poke-red hover:underline">← Back to Pokédex</Link>
+        <BackLink />
       </div>
     </main>
   );

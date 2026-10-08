@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPokemonList, toApiError } from '../../lib/api';
 import { PAGE_SIZE, queryKeys } from '../../lib/queryKeys';
@@ -9,17 +8,24 @@ import { PokemonCard } from './PokemonCard';
 
 /**
  * US01 – paginated grid of Pokémon summaries.
- * React Query caches each page; the backend also caches (Caffeine 24h) so
- * repeated page loads are fast end-to-end.
+ * Page is stored in URL query param (?page=N) so it survives navigation
+ * and works with browser back/forward buttons.
  */
 export function PokemonListPage() {
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '0');
 
   const { data, isPending, error } = useQuery({
     queryKey: queryKeys.pokemonList(page, PAGE_SIZE),
     queryFn: () => fetchPokemonList(page, PAGE_SIZE),
     placeholderData: (prev) => prev, // keep previous page visible while fetching → no flicker
   });
+
+  const goToPage = (newPage: number) => {
+    if (newPage < 0) return;
+    if (data && newPage >= data.totalPages) return;
+    setSearchParams({ page: String(newPage) }, { replace: true });
+  };
 
   if (isPending) {
     return (
@@ -65,10 +71,10 @@ export function PokemonListPage() {
       </div>
 
       <div className="mt-8 flex items-center justify-between">
-        <Button variant="secondary" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+        <Button variant="secondary" disabled={page === 0} onClick={() => goToPage(page - 1)}>
           ← Previous
         </Button>
-        <Button disabled={page + 1 >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
+        <Button disabled={data && page + 1 >= data.totalPages} onClick={() => goToPage(page + 1)}>
           Next →
         </Button>
       </div>
