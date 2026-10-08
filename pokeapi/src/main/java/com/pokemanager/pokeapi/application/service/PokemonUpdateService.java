@@ -49,19 +49,16 @@ public class PokemonUpdateService {
         return localPokemonRepository.save(pokemon);
     }
 
-    /** Trim/lowercase/dedupe; reject when nothing meaningful remains or too many tags. */
+    /** Trim/lowercase/dedupe; allow empty list (user may remove all tags). */
     private List<String> normalizeTags(List<String> raw) {
         if (raw == null) {
-            throw new InvalidPayloadException("internalClassificationTags", "must not be empty");
+            return List.of();
         }
         List<String> normalized = raw.stream()
                 .filter(t -> t != null && !t.isBlank())
                 .map(t -> t.trim().toLowerCase())
                 .distinct()
                 .toList();
-        if (normalized.isEmpty()) {
-            throw new InvalidPayloadException("internalClassificationTags", "must contain at least one non-blank tag");
-        }
         if (normalized.size() > MAX_TAGS) {
             throw new InvalidPayloadException("internalClassificationTags", "at most " + MAX_TAGS + " tags allowed");
         }

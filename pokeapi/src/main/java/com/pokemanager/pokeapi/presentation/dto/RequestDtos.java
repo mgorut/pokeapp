@@ -25,14 +25,12 @@ public final class RequestDtos {
      * lost-update races (client must send back the version it last read).
      */
     public record UpdatePokemonRequest(
-            @NotBlank(message = "must not be blank")
             @Size(max = 200, message = "must be at most 200 characters")
             String localizedName,
 
             @Size(max = 1000, message = "must be at most 1000 characters")
             String geographicMetadata,
 
-            @NotEmpty(message = "must contain at least one tag")
             @Size(max = 10, message = "at most 10 tags allowed")
             List<@NotBlank(message = "tags must not be blank")
                    @Size(max = 50, message = "tag too long (max 50)") String> internalClassificationTags,
