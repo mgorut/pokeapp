@@ -1,5 +1,3 @@
-## 📄 File 2: `02-FUNCTIONAL-REQUIREMENTS.md`
-
 # 📋 Functional Requirements - Pokemon User Stories
 
 ## Context
