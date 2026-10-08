@@ -4,7 +4,6 @@ import com.pokemanager.pokeapi.domain.exception.PokeApiUnavailableException;
 import com.pokemanager.pokeapi.domain.exception.PokemonNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -27,15 +26,10 @@ public class PokeApiHttpGateway {
 
     private final RestClient restClient;
 
-    public PokeApiHttpGateway(RestClient pokeApiRestClient,
-                              @Value("${pokeapi.base-url}") String ignoredBaseInjectedForDocs) {
-        // base URL is configured on the injected RestClient bean (see RestClientConfig)
+    // Single constructor so Spring resolves the bean unambiguously; the base URL
+    // is already bound to the injected RestClient bean (see RestClientConfig).
+    public PokeApiHttpGateway(RestClient pokeApiRestClient) {
         this.restClient = pokeApiRestClient;
-    }
-
-    /** Package-visible constructor used by tests with a MockRestServiceServer-bound client. */
-    PokeApiHttpGateway(RestClient restClient) {
-        this.restClient = restClient;
     }
 
     public <T> Optional<T> getOptional(String path, Class<T> type) {

@@ -22,5 +22,3 @@ CREATE TABLE pokemon_local (
     synced_at                   TIMESTAMP NOT NULL,
     version                     BIGINT NOT NULL DEFAULT 0
 );
-
-CREATE INDEX idx_pokemon_local_name ON pokemon_local (LOWER(name));

@@ -45,13 +45,12 @@ class PokemonEnumerationServiceTest {
 
     /** Raw service instance — used for clamping assertions (bypasses cache). */
     private PokemonEnumerationService target;
-    /** JDK proxy exposing the same two methods with the CacheInterceptor applied. */
-    private CachedEnumerations cached;
+    /** CGLIB proxy of the service with the real CacheInterceptor applied. */
+    private Object cachedProxy;
 
-    /** Minimal interface so a JDK proxy can wrap the concrete service. */
-    public interface CachedEnumerations {
-        com.pokemanager.pokeapi.domain.model.PageResult<com.pokemanager.pokeapi.domain.model.PokemonSummary>
-                enumerate(int page, int size);
+    /** Local helper: cast the proxy once and call through it. */
+    private PageResult<PokemonSummary> cached(int page, int size) {
+        return ((PokemonEnumerationService) cachedProxy).enumerate(page, size);
     }
 
     @Configuration
@@ -75,15 +74,19 @@ class PokemonEnumerationServiceTest {
     void setUp() {
         target = new PokemonEnumerationService(pokeApiClient);
 
-        // Build a JDK proxy that runs the REAL Spring CacheInterceptor around the
-        // service — identical semantics to the annotation-driven proxy at runtime.
+        // Build a CGLIB subclass proxy that runs the REAL Spring CacheInterceptor
+        // around the service — identical semantics to the annotation-driven proxy
+        // at runtime. CGLIB (proxyTargetClass) is required because the concrete
+        // class's generic return type PageResult<PokemonSummary> must survive the
+        // proxy so Spring can deserialize cached entries correctly; a JDK proxy
+        // behind a hand-written interface loses that generic signature.
         var ctx = new AnnotationConfigApplicationContext(TestCacheConfig.class);
         CacheInterceptor interceptor = ctx.getBean(CacheInterceptor.class);
         ProxyFactory factory = new ProxyFactory(target);
-        factory.setInterfaces(CachedEnumerations.class);
+        factory.setProxyTargetClass(true);
         factory.addAdvice(ExposeInvocationInterceptor.INSTANCE);
         factory.addAdvice(interceptor);
-        cached = (CachedEnumerations) factory.getProxy();
+        cachedProxy = factory.getProxy();
         ctx.close();
     }
 
@@ -94,7 +97,7 @@ class PokemonEnumerationServiceTest {
                 new PokemonSummary(1, "bulbasaur", "img.png", "Grass", 6.9, List.of("overgrow"))));
         when(pokeApiClient.countTotal()).thenReturn(1000);
 
-        PageResult<PokemonSummary> result = cached.enumerate(0, 10);
+        PageResult<PokemonSummary> result = cached(0, 10);
 
         assertThat(result.content()).hasSize(1);
         assertThat(result.totalElements()).isEqualTo(1000);
@@ -112,8 +115,8 @@ class PokemonEnumerationServiceTest {
         when(pokeApiClient.findPage(anyInt(), anyInt())).thenReturn(List.of());
         when(pokeApiClient.countTotal()).thenReturn(0);
 
-        cached.enumerate(2, 20);
-        cached.enumerate(2, 20);
+        cached(2, 20);
+        cached(2, 20);
 
         verify(pokeApiClient, times(1)).findPage(2, 20);
         verify(pokeApiClient, times(1)).countTotal();
@@ -125,8 +128,8 @@ class PokemonEnumerationServiceTest {
         when(pokeApiClient.findPage(anyInt(), anyInt())).thenReturn(List.of());
         when(pokeApiClient.countTotal()).thenReturn(0);
 
-        cached.enumerate(0, 10);
-        cached.enumerate(1, 10);
+        cached(0, 10);
+        cached(1, 10);
 
         verify(pokeApiClient).findPage(0, 10);
         verify(pokeApiClient).findPage(1, 10);
