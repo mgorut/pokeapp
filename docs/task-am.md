@@ -1,4 +1,4 @@
-## **VERSION 1: Autonomous Mode (No Questions)**
+## **Autonomous Mode (No Questions)**
 
 # 🎯 PokéManager API - Full Implementation Prompt
 
