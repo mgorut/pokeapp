@@ -185,7 +185,7 @@ npm run lint                 # eslint (clean)
 
 ## 🤖 GenAI Usage
 
-This project was built with a generative-AI coding assistant (Qwen Code with project skills in `.qwen/skills/`). Full documentation follows the template in [`docs/06-GENAI-TOOL-GUIDE.md`](docs/06-GENAI-TOOL-GUIDE.md); the exact prompts are in [`docs/prompt text/`](docs/prompt%20text/) and the interactive workflow in [`docs/task.md`](docs/task.md).
+This project was built with a generative-AI coding assistant (Qwen Code with project skills in `.qwen/skills/`). Full documentation follows the template in [`docs/06-GENAI-TOOL-GUIDE.md`](docs/06-GENAI-TOOL-GUIDE.md); the exact prompts are in [`docs/prompt text/`](docs/prompt%20text/) and the interactive workflow in [`docs/task-am.md`](docs/task-am.md) or [`docs/task-im.md`](docs/task-im.md).
 
 ### Prompt used
 Requirements were provided as six spec files (`docs/01`–`docs/06`): project overview, functional requirements (US01–US04), technical requirements (Clean Architecture, DB, testing), frontend requirements, delivery/DevOps, and the GenAI guide. The master prompt instructed the agent to implement each phase, ask clarifying questions at decision points, and verify with real builds/tests.
