@@ -50,8 +50,7 @@ public class LocalPokemonEntity {
      * than the raw array text. readTags() in the adapter defensively unwraps
      * that double-encoding so tag lists survive an entity re-load.
      */
-    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-    @Column(name = "internal_classification_tags", length = 4000)
+    @Column(name = "internal_classification_tags", columnDefinition = "TEXT", length = 4000)
     private String internalClassificationTags;
 
     @Column(name = "synced_at", nullable = false)
