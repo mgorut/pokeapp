@@ -1,5 +1,3 @@
-## 📄 File 3: `03-TECHNICAL-REQUIREMENTS.md`
-
 # ⚙️ Technical Requirements - Architecture & Implementation
 
 ## Context
