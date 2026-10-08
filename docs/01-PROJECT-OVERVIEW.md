@@ -1,5 +1,3 @@
-## 📄 File 1: `01-PROJECT-OVERVIEW.md`
-
 # 🎯 Project Overview - PokéManager API
 
 ## Role
